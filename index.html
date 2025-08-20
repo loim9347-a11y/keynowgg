@@ -362,17 +362,7 @@
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
-
-        // Hàm sao chép văn bản vào clipboard
-        function copyToClipboard(elementId) {
-            const textToCopy = document.getElementById(elementId).textContent;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert('Link đã được sao chép vào bộ nhớ!');
-            }).catch(err => {
-                console.error('Không thể sao chép: ', err);
-            });
-        }
-
+          
         // Hàm tạo hiệu ứng pháo giấy (confetti)
         function createConfetti() {
             for (let i = 0; i < 50; i++) {
