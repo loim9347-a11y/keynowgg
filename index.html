@@ -1,381 +1,194 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get Key - Giao diện Anime Dễ Thương</title>
-    <style>
-        /* CSS */
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        @keyframes glow {
-            from { box-shadow: 0 0 5px #ff69b4; }
-            to { box-shadow: 0 0 20px #ff69b4, 0 0 30px #ff69b4; }
-        }
-        @keyframes confetti {
-            0% { transform: translateY(0) rotate(0); opacity: 1; }
-            100% { transform: translateY(500px) rotate(720deg); opacity: 0; }
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thông báo — Vũ Trụ</title>
+  <style>
+    :root{--bg:#050512;--card-bg:rgba(6,8,20,0.55);--accent:#7afcff;--glow:#5ef0ff}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+    /* canvas bối cảnh */
+    canvas#bg{position:fixed;inset:0;display:block;z-index:0}
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-image: url('https://files.catbox.moe/xynkim.gif');
-            background-size: cover;
-            background-position: center;
-            color: #fff;
-            position: relative;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
+    /* lớp overlay mờ để làm tối */
+    .overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(2,6,15,0.25),rgba(0,0,0,0.65));z-index:1;pointer-events:none}
 
-        .container {
-            width: 90%;
-            max-width: 500px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            animation: fadeIn 1s ease-out;
-            position: relative;
-            z-index: 10;
-        }
+    /* hộp thông báo */
+    .panel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;min-width:320px;max-width:900px;padding:36px 28px;border-radius:18px;background:var(--card-bg);backdrop-filter:blur(6px) saturate(120%);box-shadow:0 10px 40px rgba(0,0,0,0.6),0 0 40px rgba(94,240,255,0.06);border:1px solid rgba(127,255,255,0.06);text-align:center;color:#e9f6ff}
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 25px;
-            z-index: -1;
-            transform: rotate(5deg);
-        }
+    .logo{font-weight:800;letter-spacing:2px;color:var(--accent);font-size:18px;text-transform:uppercase;text-shadow:0 0 18px rgba(122,252,255,0.08)}
+    h1{margin:14px 0 6px;font-size:24px;line-height:1.1;color:#fff;text-shadow:0 2px 22px rgba(90,200,255,0.08)}
+    p.msg{margin:14px 0 22px;font-size:18px;color:#dbeeff;opacity:0.95}
 
-        h1 {
-            color: #ff69b4;
-            text-shadow: 0 0 5px #ff69b4, 0 0 10px #ff69b4;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
+    /* nút */
+    .actions{display:flex;justify-content:center}
+    button#closeBtn{appearance:none;border:0;padding:12px 28px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));color:#e6fbff;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.5),0 0 18px rgba(94,240,255,0.07);transition:transform .14s ease,filter .14s ease}
+    button#closeBtn:active{transform:translateY(1px) scale(.997)}
+    button#closeBtn:hover{filter:brightness(1.07)}
 
-        .input-group {
-            margin-bottom: 25px;
-            position: relative;
-        }
+    /* neon accent under the button */
+    .glow-line{height:6px;width:120px;margin:18px auto 0;border-radius:999px;background:linear-gradient(90deg,var(--glow),transparent)}
 
-        input {
-            width: calc(100% - 20px);
-            padding: 12px 10px;
-            border-radius: 15px;
-            border: 2px solid #ff69b4;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            outline: none;
-            font-size: 1em;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
+    /* responsive */
+    @media (max-width:420px){.panel{padding:22px;border-radius:14px}h1{font-size:18px}p.msg{font-size:15px}}
 
-        input:focus {
-            border-color: #ffd700;
-            box-shadow: 0 0 10px #ffd700;
-        }
-
-        .button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        .button.get-key {
-            background: linear-gradient(45deg, #ff69b4, #ffb6c1);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.5);
-        }
-
-        .button.get-key:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.7);
-        }
-        
-        .button.get-key:active {
-            transform: translateY(0);
-        }
-
-        .button.submit {
-            background: linear-gradient(45deg, #8a2be2, #4b0082);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.5);
-        }
-
-        .button.submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.7);
-        }
-        
-        .button.submit:active {
-            transform: translateY(0);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .modal-content {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            text-align: center;
-            position: relative;
-            animation: fadeIn 0.5s ease-out;
-            transform: scale(0.8);
-            animation: modalPop 0.5s forwards;
-            max-width: 400px;
-            width: 90%;
-            box-sizing: border-box;
-        }
-        @keyframes modalPop {
-            to { transform: scale(1); }
-        }
-
-        .close-button {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            color: #fff;
-            font-size: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .close-button:hover {
-            color: #ff69b4;
-        }
-
-        .modal-content h2 {
-            color: #ff69b4;
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-
-        .modal-content p {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-        }
-
-        .modal-content .key-link {
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #ff69b4;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            font-size: 0.9em;
-            text-align: center;
-            margin-bottom: 15px;
-            cursor: pointer;
-            word-wrap: break-word;
-        }
-
-        /* Success modal styles */
-        .success-modal .modal-content {
-            background: linear-gradient(135deg, rgba(135, 206, 235, 0.3), rgba(255, 105, 180, 0.3));
-        }
-
-        .success-modal h2 {
-            color: #ffd700;
-            text-shadow: 0 0 5px #ffd700;
-        }
-
-        .confetti-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 99;
-        }
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #fff;
-            opacity: 0;
-            border-radius: 50%;
-            animation: confetti 2s forwards;
-        }
-        /* Cập nhật các kiểu responsive cho điện thoại */
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2.2em; /* Tăng kích thước tiêu đề */
-            }
-
-            .container {
-                padding: 25px; /* Tăng padding để có nhiều không gian hơn */
-            }
-
-            input {
-                font-size: 1.2em; /* Tăng kích thước chữ trong ô nhập */
-                padding: 15px 10px; /* Tăng padding để ô nhập dễ chạm hơn */
-            }
-
-            .button {
-                font-size: 1.3em; /* Tăng kích thước chữ cho nút */
-                padding: 18px; /* Tăng padding để nút lớn hơn, dễ bấm hơn */
-            }
-
-            .modal-content h2 {
-                font-size: 1.8em; /* Tăng kích thước chữ tiêu đề modal */
-            }
-
-            .modal-content p {
-                font-size: 1.2em; /* Tăng kích thước chữ cho đoạn văn bản */
-            }
-
-            .modal-content .key-link {
-                font-size: 1em; /* Tăng kích thước chữ cho ô link */
-                padding: 12px; /* Tăng padding cho ô link */
-            }
-        }
-    </style>
+    /* small cinematic top-left badge */
+    .badge{position:fixed;left:18px;top:18px;z-index:3;color:rgba(255,255,255,0.7);font-size:12px;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));backdrop-filter:blur(4px);box-shadow:0 6px 18px rgba(0,0,0,0.4)}
+  </style>
 </head>
 <body>
+  <canvas id="bg"></canvas>
+  <div class="overlay"></div>
+  <div class="badge">Vũ Trụ / Hệ Thông Báo</div>
 
-    <div class="container">
-        <h1>1 key sử dụng 12 tiếng</h1>
-        <div class="input-group">
-            <input type="text" id="keyInput" placeholder="Dán key của bạn vào đây...">
-        </div>
-        <button class="button get-key" id="getKeyBtn">Lấy Key</button>
-        <button class="button submit" id="submitBtn">Xác nhận</button>
+  <section class="panel" role="dialog" aria-labelledby="title" aria-describedby="msg">
+    <div class="logo">App Now Gg</div>
+    <h1 id="title">CHÍNH THỨC DỪNG HOẠT ĐỘNG</h1>
+    <p class="msg" id="msg">App Now Gg Chính Thức Dừng Hoạt Động Vĩnh Viễn Do Lỗi Không Thể Sửa</p>
+
+    <div class="actions">
+      <button id="closeBtn" aria-label="Đóng thông báo">Đóng</button>
     </div>
+    <div class="glow-line" aria-hidden="true"></div>
+  </section>
 
-    <div id="getKeyModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal('getKeyModal')">&times;</span>
-            <h2>🔑 Lấy Key Tại Đây 🔑</h2>
-            <p>Nhấn vào ô bên dưới để sao chép link và lấy key.</p>
-            <div class="key-link" id="getKeyLink" onclick="copyToClipboard('getKeyLink')"></div>
-            <p>Sau khi lấy key, dán key vào ô ở trang chính và nhấn 'Xác nhận' nha! 😉</p>
-        </div>
-    </div>
+  <script>
+    // --- Background: simple animated starfield + drifting nebula ---
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    let W, H, stars = [], nebula = [];
 
-    <div id="successModal" class="modal success-modal">
-        <div class="modal-content">
-            <div class="confetti-container" id="confettiContainer"></div>
-            <span class="close-button" onclick="closeModal('successModal')">&times;</span>
-            <h2>🎉 Thành công! 🎉</h2>
-            <p>Key của bạn đã được xác nhận. Chúc bạn có một trải nghiệm thật tuyệt vời!</p>
-            <p>Bạn sẽ được chuyển đến trang chính sau giây lát...</p>
-        </div>
-    </div>
+    function resize(){
+      W = canvas.width = innerWidth;
+      H = canvas.height = innerHeight;
+    }
+    addEventListener('resize', resize);
+    resize();
 
-    <script>
-        // --- Thay đổi các link tại đây ---
-        const LINKS = {
-            linkKey: "Tanutongo", // Đây là key bạn muốn người dùng nhập
-            linkGet: "https://4notez.com/q93o7wygr6", // Link trang web lấy key
-            linkWebChinh: "https://loim9347-a11y.github.io/nowgg/" // Link trang web chính sau khi xác nhận
-        };
-        // ------------------------------------
-
-        // Khởi tạo các biến DOM
-        const getKeyBtn = document.getElementById('getKeyBtn');
-        const submitBtn = document.getElementById('submitBtn');
-        const getKeyModal = document.getElementById('getKeyModal');
-        const getKeyLinkDiv = document.getElementById('getKeyLink');
-        const successModal = document.getElementById('successModal');
-        const keyInput = document.getElementById('keyInput');
-        const confettiContainer = document.getElementById('confettiContainer');
-
-        // Gán link get key vào modal
-        getKeyLinkDiv.textContent = LINKS.linkGet;
-
-        // Xử lý sự kiện khi nhấn nút "Lấy Key"
-        getKeyBtn.addEventListener('click', () => {
-            showModal('getKeyModal');
-            copyToClipboard('getKeyLink');
+    // create stars
+    const STAR_COUNT = Math.round((W*H)/6000);
+    function initStars(){
+      stars = [];
+      for(let i=0;i<STAR_COUNT;i++){
+        stars.push({
+          x: Math.random()*W,
+          y: Math.random()*H,
+          z: Math.random()*1.0,
+          r: Math.random()*1.5 + 0.2,
+          vx: (Math.random()-0.5)*0.02
         });
+      }
+    }
 
-        // Xử lý sự kiện khi nhấn nút "Xác nhận"
-        submitBtn.addEventListener('click', () => {
-            const userKey = keyInput.value.trim();
-            if (userKey === LINKS.linkKey) {
-                showModal('successModal');
-                createConfetti();
-                setTimeout(() => {
-                    window.location.href = LINKS.linkWebChinh;
-                }, 3000); // Chuyển trang sau 3 giây
-            } else {
-                alert('Key không hợp lệ, vui lòng thử lại!');
-            }
-        });
+    // create nebula blobs
+    function initNebula(){
+      nebula = [];
+      const colors = [[120,30,200,0.06],[60,120,255,0.045],[160,40,220,0.04]];
+      for(let i=0;i<3;i++){
+        nebula.push({x:Math.random()*W*1.5 - W*0.25, y:Math.random()*H*1.2 - H*0.1, r:Math.max(W,H)*0.7 + Math.random()*200, col:colors[i], vx:(Math.random()-0.5)*0.1, vy:(Math.random()-0.5)*0.03});
+      }
+    }
 
-        // Hàm hiển thị modal
-        function showModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
-        }
+    function draw(){
+      ctx.clearRect(0,0,W,H);
 
-        // Hàm đóng modal
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-          
-        // Hàm tạo hiệu ứng pháo giấy (confetti)
-        function createConfetti() {
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                confetti.style.left = `${Math.random() * 100}%`;
-                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
-                confetti.style.animationDuration = `${2 + Math.random() * 1}s`;
-                confettiContainer.appendChild(confetti);
-            }
-        }
-    </script>
+      // dark gradient backdrop
+      const g = ctx.createLinearGradient(0,0,0,H);
+      g.addColorStop(0,'#04030b');
+      g.addColorStop(1,'#000010');
+      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
 
+      // draw nebula soft blobs
+      nebula.forEach(n => {
+        const g2 = ctx.createRadialGradient(n.x, n.y, n.r*0.05, n.x, n.y, n.r);
+        const c = n.col;
+        g2.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},${c[3]})`);
+        g2.addColorStop(0.35, `rgba(${c[0]},${c[1]},${c[2]},${c[3]*0.7})`);
+        g2.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.fillStyle = g2;
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI*2); ctx.fill();
+      });
+
+      ctx.globalCompositeOperation = 'source-over';
+
+      // stars
+      for(let i=0;i<stars.length;i++){
+        const s = stars[i];
+        // parallax by z
+        const x = s.x + (1-s.z)*20;
+        const y = s.y;
+        const brightness = 0.6 + 0.4*(1-s.z);
+        ctx.fillStyle = `rgba(255,255,255,${brightness})`;
+        ctx.beginPath(); ctx.arc(x,y,s.r*(1+ (1-s.z)),0,Math.PI*2); ctx.fill();
+
+        // tiny twinkle
+        if(Math.random() < 0.002) ctx.fillStyle = 'rgba(255,255,255,0.95)', ctx.fillRect(x+Math.random()*2-1,y+Math.random()*2-1,1,1);
+
+        s.x += s.vx*(1 + (1-s.z)*2);
+        if(s.x < -5) s.x = W+5; if(s.x > W+5) s.x = -5;
+      }
+
+      // subtle shooting star occasionally
+      if(Math.random() < 0.007){ shoot(); }
+
+      requestAnimationFrame(draw);
+    }
+
+    // shooting star
+    function shoot(){
+      const sx = Math.random()*W;
+      const sy = Math.random()*H*0.6;
+      const len = 180 + Math.random()*220;
+      const ang = -0.6 - Math.random()*0.6;
+      let t = 0;
+      const speed = 8 + Math.random()*6;
+      function step(){
+        t += 1;
+        const px = sx + Math.cos(ang)*t*speed;
+        const py = sy + Math.sin(ang)*t*speed;
+        const grad = ctx.createLinearGradient(px,py,px+Math.cos(ang)*-len,py+Math.sin(ang)*-len);
+        grad.addColorStop(0,'rgba(255,255,255,0.95)');
+        grad.addColorStop(1,'rgba(255,200,120,0)');
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px+Math.cos(ang)*-len, py+Math.sin(ang)*-len); ctx.lineWidth=2; ctx.stroke();
+        ctx.globalCompositeOperation = 'source-over';
+        if(px > -len && px < W+len && py > -len && py < H+len && t < 60) requestAnimationFrame(step);
+      }
+      step();
+    }
+
+    // initialize everything
+    function boot(){
+      resize();
+      initStars();
+      initNebula();
+      draw();
+    }
+    boot();
+
+    // gentle drift for nebula
+    setInterval(()=>{
+      nebula.forEach(n=>{ n.x += n.vx; n.y += n.vy; if(n.x < -W*0.6) n.x = W*1.2; if(n.x > W*1.2) n.x = -W*0.6; if(n.y < -H*0.6) n.y = H*1.2; if(n.y > H*1.2) n.y = -H*0.6; });
+    }, 60);
+
+    // regenerate on orientation change/resize for clarity
+    let rezTO; addEventListener('resize', ()=>{ clearTimeout(rezTO); rezTO = setTimeout(()=>{ initStars(); initNebula(); },220); });
+
+    // --- Close button behaviour: hide everything and leave blank page ---
+    const closeBtn = document.getElementById('closeBtn');
+    closeBtn.addEventListener('click', ()=>{
+      // visually remove everything immediately
+      document.body.style.transition = 'opacity .18s ease';
+      document.body.style.opacity = '0';
+      // after fade, clear the document so nothing remains
+      setTimeout(()=>{ document.documentElement.innerHTML = ''; }, 190);
+    });
+
+    // Accessibility: allow Enter / Space to activate
+    closeBtn.addEventListener('keyup', (e)=>{ if(e.key === 'Enter' || e.key === ' ') closeBtn.click(); });
+
+  </script>
 </body>
 </html>
