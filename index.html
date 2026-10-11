@@ -1,19 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Key Center - Nhận Key</title>
   <meta name="theme-color" content="#0b0f0d">
-  <meta name="description" content="Trang nhận key tự động">
+  <meta name="description" content="KEY CENTER - Hệ thống nhận key tự động">
+  <title>KEY CENTER - Nhận Key</title>
 
   <style>
-    /* =====================================
-       GIAO DIỆN - CÓ THỂ TÙY CHỈNH TẠI ĐÂY
-       ===================================== */
-
     :root {
       --bg: #0b0f0d;
       --panel: #131a16;
@@ -24,9 +18,7 @@
       --danger: #ff7777;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -42,10 +34,7 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    button,
-    input {
-      font: inherit;
-    }
+    button, input { font: inherit; }
 
     .container {
       width: 100%;
@@ -88,7 +77,7 @@
       background: rgba(19, 26, 22, 0.97);
       border: 1px solid var(--border);
       border-radius: 18px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 20px 60px #0004;
     }
 
     .status-label {
@@ -97,7 +86,6 @@
       gap: 8px;
       color: var(--muted);
       font-size: 12px;
-      text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 20px;
     }
@@ -168,13 +156,8 @@
       overflow-wrap: anywhere;
     }
 
-    .message.error {
-      color: var(--danger);
-    }
-
-    .message.success {
-      color: var(--green);
-    }
+    .message.error { color: var(--danger); }
+    .message.success { color: var(--green); }
 
     .result {
       margin-top: 22px;
@@ -182,9 +165,7 @@
       border-top: 1px solid var(--border);
     }
 
-    .result[hidden] {
-      display: none;
-    }
+    .result[hidden] { display: none; }
 
     .result-title {
       font-size: 13px;
@@ -202,8 +183,7 @@
       text-align: center;
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.3px;
-      outline: none;
+      overflow-wrap: anywhere;
     }
 
     .notice {
@@ -225,20 +205,14 @@
     }
 
     @media (max-width: 380px) {
-      .card {
-        padding: 19px;
-      }
-
-      .brand h1 {
-        font-size: 22px;
-      }
+      .card { padding: 19px; }
+      .brand h1 { font-size: 22px; }
     }
   </style>
 </head>
 
 <body>
   <main class="container">
-
     <header class="brand">
       <div class="logo" aria-hidden="true">⌘</div>
       <h1>KEY CENTER</h1>
@@ -254,24 +228,25 @@
       <h2>Nhận key của bạn</h2>
 
       <p class="description">
-        Nhấn nút bên dưới để hệ thống cấp key.
-        Hãy sao chép và lưu lại key sau khi nhận.
+        Nhấn Lấy Key để tiếp tục đến Link4M.
+        Sau khi quay lại website, bạn có thể yêu cầu cấp key.
       </p>
 
-      <button
-        class="button button-primary"
-        id="getKeyButton"
-        type="button"
-      >
+      <button class="button button-primary" id="getLinkButton" type="button">
         Lấy Key
       </button>
 
-      <p
-        class="message"
-        id="statusMessage"
-        role="status"
-        aria-live="polite"
-      ></p>
+      <button
+        class="button button-primary"
+        id="receiveButton"
+        type="button"
+        hidden
+        style="margin-top: 10px"
+      >
+        Nhận Key
+      </button>
+
+      <p class="message" id="statusMessage" role="status" aria-live="polite"></p>
 
       <div class="result" id="keyResult" hidden>
         <div class="result-title">KEY CỦA BẠN</div>
@@ -284,11 +259,7 @@
           aria-label="Key của bạn"
         >
 
-        <button
-          class="button button-secondary"
-          id="copyButton"
-          type="button"
-        >
+        <button class="button button-secondary" id="copyButton" type="button">
           Sao chép Key
         </button>
 
@@ -304,43 +275,34 @@
 
       <div class="notice">
         <strong>Hướng dẫn:</strong><br>
-        1. Nhấn Lấy Key.<br>
-        2. Sao chép key và lưu lại.<br>
-        3. Nhấn Xác nhận để tiếp tục.
+        1. Nhấn Lấy Key để mở Link4M.<br>
+        2. Quay lại website sau khi hoàn tất bước của bạn.<br>
+        3. Nhấn Nhận Key để yêu cầu cấp key.<br>
+        4. Sao chép key và nhấn Xác nhận để tiếp tục.
       </div>
     </section>
 
-    <footer>
-      KEY CENTER · Powered by Supabase
-    </footer>
+    <footer>KEY CENTER · Powered by Supabase</footer>
   </main>
 
   <script>
-    /* =========================================
-       CẤU HÌNH - BẠN CHỈ CẦN SỬA 2 DÒNG DƯỚI
-       ========================================= */
+    // ===== CẤU HÌNH =====
 
-    // GHI CHÚ 1:
-    // Đây là Project URL bạn đã cung cấp.
     const SUPABASE_URL =
       "https://wxygtmfttyidwnhjdwdw.supabase.co";
 
-    // GHI CHÚ 2:
-    // Dán khóa anon public của ĐÚNG project vào đây.
-    // Không dùng service_role hoặc secret key.
+    // Đây là anon public key bạn đã dùng trong file cũ.
+    // Không thay bằng service_role hoặc secret key.
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4eWd0bWZ0dHlpZHduaGpkd2R3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2NDU2ODgsImV4cCI6MjEwNzIyMTY4OH0.d0XLGnIxohNg4DzmzCmqNZuIDMijKJFta4s8n48CSHE";
 
-    // GHI CHÚ 3:
-    // Thay bằng URL WEBSITE CHÍNH của bạn.
-    const MAIN_WEBSITE_URL =
-      "https://example.com/";
+    // THAY bằng URL website chính thực tế của bạn.
+    const MAIN_WEBSITE_URL = "https://example.com/";
 
-    /* =========================================
-       XỬ LÝ LẤY KEY - KHÔNG CẦN SỬA PHẦN NÀY
-       ========================================= */
+    // ===== PHẦN XỬ LÝ =====
 
-    const getButton = document.getElementById("getKeyButton");
+    const getLinkButton = document.getElementById("getLinkButton");
+    const receiveButton = document.getElementById("receiveButton");
     const copyButton = document.getElementById("copyButton");
     const confirmButton = document.getElementById("confirmButton");
     const statusMessage = document.getElementById("statusMessage");
@@ -356,10 +318,13 @@
 
     function getClientId() {
       const storageKey = "key_center_client_id_v1";
-
       let clientId = localStorage.getItem(storageKey);
 
       if (!clientId) {
+        if (!crypto.randomUUID) {
+          throw new Error("Trình duyệt không hỗ trợ tạo mã người dùng.");
+        }
+
         clientId = crypto.randomUUID();
         localStorage.setItem(storageKey, clientId);
       }
@@ -367,56 +332,101 @@
       return clientId;
     }
 
-    getButton.addEventListener("click", async () => {
-      if (
-        !SUPABASE_ANON_KEY ||
-        SUPABASE_ANON_KEY === "DAN_ANON_PUBLIC_KEY_VAO_DAY"
-      ) {
-        setMessage(
-          "Bạn chưa điền khóa anon public trong phần cấu hình.",
-          "error"
-        );
-        return;
-      }
+    async function callFunction(name, body = {}) {
+      const response = await fetch(
+        `${SUPABASE_URL}/functions/v1/${name}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify(body)
+        }
+      );
 
-      getButton.disabled = true;
-      keyResult.hidden = true;
-      currentKey = "";
-
-      setMessage("Đang kết nối và yêu cầu cấp key...");
+      const raw = await response.text();
+      let data;
 
       try {
-        const clientId = getClientId();
+        data = JSON.parse(raw);
+      } catch {
+        throw new Error(`Phản hồi máy chủ không hợp lệ (HTTP ${response.status}).`);
+      }
 
-        const response = await fetch(
-          SUPABASE_URL + "/functions/v1/get-key",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "apikey": SUPABASE_ANON_KEY,
-              "Authorization": "Bearer " + SUPABASE_ANON_KEY
-            },
-            body: JSON.stringify({
-              clientId: clientId
-            })
-          }
+      if (!response.ok || data.success !== true) {
+        throw new Error(
+          data.message || data.error || `Lỗi HTTP ${response.status}`
         );
+      }
 
-        let data;
+      return data;
+    }
 
-        try {
-          data = await response.json();
-        } catch {
-          throw new Error(
-            "Máy chủ trả về dữ liệu không hợp lệ."
-          );
+    // Nhận biết người dùng quay lại từ Link4M.
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("from") === "link4m") {
+      receiveButton.hidden = false;
+      getLinkButton.textContent = "Tạo lại Link4M";
+      setMessage(
+        "Bạn đã quay lại website. Nhấn Nhận Key để tiếp tục.",
+        "success"
+      );
+
+      // Xóa tham số khỏi thanh địa chỉ sau khi nhận biết.
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname + window.location.hash
+      );
+    }
+
+    // Bước 1: gọi create-link4m.
+    getLinkButton.addEventListener("click", async () => {
+      getLinkButton.disabled = true;
+      setMessage("Đang tạo liên kết Link4M...");
+
+      try {
+        const data = await callFunction("create-link4m");
+
+        if (!data.shortenedUrl) {
+          throw new Error("Máy chủ không trả về link Link4M.");
         }
 
-        if (!response.ok || !data.success || !data.key) {
-          throw new Error(
-            data.error || "Không thể cấp key. Hãy thử lại."
-          );
+        const link = new URL(data.shortenedUrl);
+
+        if (
+          link.protocol !== "https:" ||
+          !["link4m.com", "link4m.co", "link4m.net"].includes(link.hostname)
+        ) {
+          throw new Error("Tên miền Link4M không hợp lệ.");
+        }
+
+        window.location.assign(link.href);
+      } catch (error) {
+        console.error("create-link4m error:", error);
+        setMessage("Không tạo được link: " + error.message, "error");
+        getLinkButton.disabled = false;
+      }
+    });
+
+    // Bước 2: yêu cầu cấp key từ get-key.
+    // Function get-key cần được Deploy riêng trên Supabase.
+    receiveButton.addEventListener("click", async () => {
+      receiveButton.disabled = true;
+      keyResult.hidden = true;
+      currentKey = "";
+      setMessage("Đang yêu cầu cấp key...");
+
+      try {
+        const data = await callFunction("get-key", {
+          clientId: getClientId()
+        });
+
+        if (typeof data.key !== "string" || !data.key) {
+          throw new Error("Máy chủ chưa trả về key hợp lệ.");
         }
 
         currentKey = data.key;
@@ -426,31 +436,24 @@
         setMessage(
           data.reused
             ? "Đã tìm thấy key đã cấp trước đó."
-            : "Cấp key thành công! Hãy lưu lại key.",
+            : "Đã nhận key thành công!",
           "success"
         );
-
       } catch (error) {
-        console.error("Get key error:", error);
-
-        setMessage(
-          error.message ||
-          "Không thể kết nối. Hãy kiểm tra mạng và cấu hình.",
-          "error"
-        );
-
+        console.error("get-key error:", error);
+        setMessage("Không nhận được key: " + error.message, "error");
       } finally {
-        getButton.disabled = false;
+        receiveButton.disabled = false;
       }
     });
 
+    // Sao chép key.
     copyButton.addEventListener("click", async () => {
       if (!currentKey) return;
 
       try {
         await navigator.clipboard.writeText(currentKey);
-        setMessage("Đã sao chép key thành công!", "success");
-
+        setMessage("Đã sao chép key!", "success");
       } catch {
         keyOutput.focus();
         keyOutput.select();
@@ -460,154 +463,36 @@
         setMessage(
           copied
             ? "Đã sao chép key!"
-            : "Hãy chọn key rồi nhấn Ctrl+C để sao chép.",
+            : "Hãy chọn key rồi nhấn Ctrl+C.",
           copied ? "success" : ""
         );
       }
     });
 
+    // Bước 3: chuyển đến website chính.
+    // Chưa xác thực key ở máy chủ; cần bổ sung verify-key để bảo vệ nội dung.
     confirmButton.addEventListener("click", () => {
       if (!currentKey) {
-        setMessage("Bạn cần lấy key trước.", "error");
+        setMessage("Bạn cần nhận key trước.", "error");
         return;
       }
 
-      // Kiểm tra URL đích trước khi chuyển trang.
       try {
         const destination = new URL(MAIN_WEBSITE_URL);
 
-        if (
-          destination.protocol !== "https:" &&
-          destination.hostname !== "localhost"
-        ) {
-          throw new Error("URL phải sử dụng HTTPS.");
+        if (destination.protocol !== "https:") {
+          throw new Error("Website chính phải dùng HTTPS.");
+        }
+
+        if (destination.hostname === "example.com") {
+          throw new Error("Bạn chưa thay URL website chính trong code.");
         }
 
         window.location.assign(destination.href);
-
       } catch (error) {
-        console.error("Destination URL error:", error);
-
-        setMessage(
-          "Bạn chưa cấu hình đúng URL website chính.",
-          "error"
-        );
+        setMessage(error.message || "URL website chính không hợp lệ.", "error");
       }
     });
   </script>
-  
-const SUPABASE_URL =
-  "https://wxygtmfttyidwnhjdwdw.supabase.co";
-
-const SUPABASE_ANON_KEY =
-  "DAN_ANON_PUBLIC_KEY_CUA_BAN_VAO_DAY";
-
-const statusEl = document.getElementById("status");
-const getLinkBtn = document.getElementById("getLinkBtn");
-const receiveBtn = document.getElementById("receiveBtn");
-const resultEl = document.getElementById("result");
-const contentText = document.getElementById("contentText");
-const copyBtn = document.getElementById("copyBtn");
-
-// Giữ cùng mã người dùng khi họ quay lại trang.
-function getClientId() {
-  let id = localStorage.getItem("content_client_id");
-
-  if (!id) {
-    id = "client_" + crypto.randomUUID().replaceAll("-", "");
-    localStorage.setItem("content_client_id", id);
-  }
-
-  return id;
-}
-
-// Gọi Edge Function của Supabase.
-async function callFunction(name, body = {}) {
-  const response = await fetch(
-    `${SUPABASE_URL}/functions/v1/${name}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-      },
-      body: JSON.stringify(body),
-    },
-  );
-
-  const raw = await response.text();
-  let data;
-
-  try {
-    data = JSON.parse(raw);
-  } catch {
-    throw new Error(`Supabase trả về phản hồi không hợp lệ (${response.status}).`);
-  }
-
-  if (!response.ok || !data.success) {
-    throw new Error(
-      data.message || data.error || `Lỗi HTTP ${response.status}`,
-    );
-  }
-
-  return data;
-}
-
-// Nếu người dùng quay lại từ Link4M, hiện nút nhận nội dung.
-if (new URLSearchParams(location.search).get("from") === "link4m") {
-  receiveBtn.hidden = false;
-  statusEl.textContent =
-    "Bạn đã quay lại website. Nhấn Nhận nội dung để tiếp tục.";
-}
-
-// Bước 1: tạo link Link4M rồi chuyển người dùng sang link đó.
-getLinkBtn.addEventListener("click", async () => {
-  getLinkBtn.disabled = true;
-  statusEl.textContent = "Đang tạo liên kết Link4M...";
-
-  try {
-    const data = await callFunction("create-link4m");
-    location.href = data.shortenedUrl;
-  } catch (error) {
-    statusEl.textContent = "Không tạo được link: " + error.message;
-    getLinkBtn.disabled = false;
-  }
-});
-
-// Bước 2: cấp nội dung chưa được dùng từ kho Supabase.
-receiveBtn.addEventListener("click", async () => {
-  receiveBtn.disabled = true;
-  statusEl.textContent = "Đang lấy nội dung...";
-  resultEl.hidden = true;
-
-  try {
-    const data = await callFunction("get-key", {
-      clientId: getClientId(),
-    });
-
-    contentText.textContent = data.content || data.key;
-    resultEl.hidden = false;
-    statusEl.textContent = data.reused
-      ? "Đây là nội dung đã được cấp cho mã trình duyệt này."
-      : "Đã cấp nội dung riêng thành công!";
-  } catch (error) {
-    statusEl.textContent = "Không lấy được nội dung: " + error.message;
-  } finally {
-    receiveBtn.disabled = false;
-  }
-});
-
-// Sao chép nội dung.
-copyBtn.addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(contentText.textContent);
-    statusEl.textContent = "Đã sao chép nội dung!";
-  } catch {
-    statusEl.textContent =
-      "Không sao chép tự động được. Hãy chọn và sao chép nội dung thủ công.";
-  }
-});
-
 </body>
 </html>
