@@ -151,7 +151,7 @@
       } catch {
         throw new Error("Liên kết Link4M không đúng định dạng.");
       }
-      const allowedHosts = new Set(["link4m.net", "www.link4m.net", "link4m.org", "www.link4m.org"]);
+      const allowedHosts = new Set(["link4m.net", "www.link4m.net", "link4m.org", "www.link4m.org", "sitetop.net"]);
       if (parsed.protocol !== "https:" || !allowedHosts.has(parsed.hostname.toLowerCase()) || parsed.username || parsed.password) {
         throw new Error("Liên kết trả về không thuộc tên miền Link4M được phép.");
       }
