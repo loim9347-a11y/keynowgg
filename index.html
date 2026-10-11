@@ -5,16 +5,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080d0b">
+  <meta name="description" content="KEY CENTER - Nhận và xác nhận key của bạn">
   <title>KEY CENTER</title>
 
   <style>
     :root {
+      color-scheme: dark;
       --bg: #080d0b;
       --card: #111914;
       --green: #39f58a;
       --text: #f2fff6;
       --muted: #91a096;
       --border: #28392f;
+      --danger: #ff9999;
     }
 
     * {
@@ -38,7 +41,7 @@
 
     .container {
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
     }
 
     header {
@@ -93,7 +96,7 @@
       margin-bottom: 17px;
       color: var(--muted);
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     button {
@@ -107,11 +110,22 @@
       font-size: 14px;
       font-weight: 800;
       cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
     }
 
     button:disabled {
       opacity: .6;
       cursor: wait;
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 3px;
     }
 
     input {
@@ -159,7 +173,7 @@
       overflow-wrap: anywhere;
     }
 
-    .copy-button {
+    .secondary-button {
       margin-top: 12px;
       border: 1px solid var(--border);
       background: #1a2820;
@@ -172,7 +186,7 @@
       padding: 11px;
       border-radius: 9px;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.6;
       overflow-wrap: anywhere;
     }
 
@@ -187,7 +201,14 @@
       display: block;
       border: 1px solid #ff656540;
       background: #ff65650d;
-      color: #ff9999;
+      color: var(--danger);
+    }
+
+    .status.info {
+      display: block;
+      border: 1px solid #8ba9ff40;
+      background: #8ba9ff0d;
+      color: #b8c9ff;
     }
 
     .content-box h3 {
@@ -204,6 +225,13 @@
       overflow-wrap: anywhere;
     }
 
+    .small-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
     footer {
       margin-top: 20px;
       color: #68766c;
@@ -211,20 +239,29 @@
       font-size: 11px;
       letter-spacing: 1px;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition: none !important;
+      }
+    }
   </style>
 </head>
 
 <body>
   <main class="container">
     <header>
-      <div class="logo">K</div>
+      <div class="logo" aria-hidden="true">K</div>
       <h1>KEY <span>CENTER</span></h1>
       <p class="subtitle">Your key. Your content.</p>
     </header>
 
     <section class="card">
       <h2>01. Lấy Key</h2>
-      <p class="description">Nhận key riêng của bạn.</p>
+      <p class="description">
+        Hoàn thành bước Link4M trước. Key chỉ được cấp sau khi
+        máy chủ xác minh nhiệm vụ thành công.
+      </p>
 
       <button id="getKeyButton" type="button">
         LẤY KEY NGAY
@@ -233,21 +270,29 @@
       <div id="keyBox" class="key-box">
         <div class="key-label">KEY CỦA BẠN</div>
         <div id="keyValue" class="key-value"></div>
-        <button id="copyButton" class="copy-button" type="button">
+        <button id="copyButton" class="secondary-button" type="button">
           Sao chép Key
         </button>
       </div>
 
-      <div id="getStatus" class="status" role="status"></div>
+      <div id="getStatus" class="status" role="status" aria-live="polite"></div>
+
+      <p class="small-note">
+        Quay lại từ Link4M không tự động chứng minh bạn đã hoàn thành
+        nhiệm vụ. Hệ thống cần xác minh từ máy chủ trước khi cấp key.
+      </p>
     </section>
 
     <section class="card">
       <h2>02. Nhập Key</h2>
-      <p class="description">Xác nhận key để xem nội dung.</p>
+      <p class="description">
+        Nhập key đã được cấp cho bạn để xác nhận và xem nội dung.
+      </p>
 
       <form id="validateForm">
         <input
           id="keyInput"
+          name="key"
           type="text"
           maxlength="200"
           placeholder="Nhập key của bạn..."
@@ -259,7 +304,7 @@
         </button>
       </form>
 
-      <div id="validateStatus" class="status" role="status"></div>
+      <div id="validateStatus" class="status" role="status" aria-live="polite"></div>
 
       <div id="contentBox" class="content-box">
         <h3 id="contentTitle"></h3>
@@ -271,35 +316,43 @@
   </main>
 
   <script>
-    // ===== SUPABASE CONFIGURATION =====
+    "use strict";
+
+    // Cấu hình Supabase hiện tại của bạn.
     const SUPABASE_URL =
       "https://wxygtmfttyidwnhjdwdw.supabase.co";
 
-    const SUPABASE_ANON_KEY =
+    const SUPABASE_PUBLISHABLE_KEY =
       "sb_publishable_ax3nIoOvnP1E0qafE_e7kg_2hA3ATbT";
 
-    const FUNCTION_URL =
-      SUPABASE_URL + "/functions/v1/";
-
-    // Mỗi hồ sơ trình duyệt giữ client ID riêng.
-    function getClientId() {
-      const storageKey = "key_center_client_id_v1";
-      let id = localStorage.getItem(storageKey);
-
-      if (!id) {
-        id = crypto.randomUUID
-          ? crypto.randomUUID()
-          : "kc-" + Date.now() + "-" +
-            Math.random().toString(36).slice(2) +
-            Math.random().toString(36).slice(2);
-
-        localStorage.setItem(storageKey, id);
-      }
-
-      return id;
-    }
+    const FUNCTION_URL = SUPABASE_URL + "/functions/v1/";
 
     const $ = id => document.getElementById(id);
+
+    // Giữ một client ID ổn định trên cùng hồ sơ trình duyệt.
+    function getClientId() {
+      const storageKey = "key_center_client_id_v1";
+
+      try {
+        let id = localStorage.getItem(storageKey);
+
+        if (!id) {
+          id = crypto.randomUUID
+            ? crypto.randomUUID()
+            : "kc-" + Date.now().toString(36) + "-" +
+              Math.random().toString(36).slice(2) +
+              Math.random().toString(36).slice(2);
+
+          localStorage.setItem(storageKey, id);
+        }
+
+        return id;
+      } catch {
+        throw new Error(
+          "Trình duyệt đang chặn bộ nhớ cục bộ. Hãy bật localStorage rồi tải lại trang."
+        );
+      }
+    }
 
     function showStatus(id, message, type) {
       const el = $(id);
@@ -308,20 +361,24 @@
     }
 
     function clearStatus(id) {
-      $(id).textContent = "";
-      $(id).className = "status";
+      const el = $(id);
+      el.textContent = "";
+      el.className = "status";
     }
 
     async function callFunction(name, payload) {
-      const response = await fetch(FUNCTION_URL + name, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_ANON_KEY,
-          "Authorization": "Bearer " + SUPABASE_ANON_KEY
-        },
-        body: JSON.stringify(payload)
-      });
+      const response = await fetch(
+        FUNCTION_URL + encodeURIComponent(name),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_PUBLISHABLE_KEY,
+            "Authorization": "Bearer " + SUPABASE_PUBLISHABLE_KEY
+          },
+          body: JSON.stringify(payload)
+        }
+      );
 
       let data;
 
@@ -335,58 +392,109 @@
       }
 
       if (!response.ok) {
-        console.error("Function error:", response.status, data);
+        console.error("Supabase function error:", response.status, data);
+
+        const detail = data.message || data.error || data.msg;
 
         throw new Error(
-          "HTTP " + response.status + ": " +
-          (data.message || data.error ||
-           JSON.stringify(data))
+          detail
+            ? String(detail)
+            : "Yêu cầu thất bại (HTTP " + response.status + ")."
         );
       }
 
       return data;
     }
 
-    // ===== GET KEY =====
-    $("getKeyButton").addEventListener("click", async () => {
+    // Kiểm tra URL do create-link trả về.
+    function getShortUrl(data) {
+      const candidate = data &&
+        (data.shortenedUrl || data.shortened_url || data.url);
+
+      if (typeof candidate !== "string" || !candidate.trim()) {
+        throw new Error(
+          "Máy chủ chưa trả về liên kết Link4M hợp lệ."
+        );
+      }
+
+      let parsed;
+
+      try {
+        parsed = new URL(candidate);
+      } catch {
+        throw new Error("Liên kết Link4M không đúng định dạng.");
+      }
+
+      const allowedHosts = new Set([
+        "link4m.org",
+        "www.link4m.org"
+      ]);
+
+      if (
+        parsed.protocol !== "https:" ||
+        !allowedHosts.has(parsed.hostname.toLowerCase()) ||
+        parsed.username ||
+        parsed.password
+      ) {
+        throw new Error(
+          "Liên kết trả về không thuộc tên miền Link4M được phép."
+        );
+      }
+
+      return parsed.href;
+    }
+
+    // Tạo link Link4M, KHÔNG gọi get-key ở bước này.
+    async function startLink4M() {
       const button = $("getKeyButton");
 
       button.disabled = true;
-      button.textContent = "ĐANG XỬ LÝ...";
+      button.textContent = "ĐANG TẠO LIÊN KẾT...";
       clearStatus("getStatus");
+      $("keyBox").style.display = "none";
 
       try {
-        const data = await callFunction("get-key", {
-          clientId: getClientId()
+        const clientId = getClientId();
+
+        const data = await callFunction("create-link", {
+          clientId: clientId
         });
 
-        if (!data.success || !data.key) {
+        if (data.success !== true) {
           throw new Error(
-            data.message || data.error ||
-            "Không còn nội dung để cấp."
+            data.message ||
+            data.error ||
+            "Không thể tạo liên kết Link4M."
           );
         }
 
-        $("keyValue").textContent = data.key;
-        $("keyInput").value = data.key;
-        $("keyBox").style.display = "block";
+        const shortUrl = getShortUrl(data);
 
-        showStatus("getStatus", "Lấy key thành công!", "success");
+        showStatus(
+          "getStatus",
+          "Đang chuyển đến Link4M. Hãy hoàn thành nhiệm vụ trên trang đó.",
+          "info"
+        );
+
+        window.location.assign(shortUrl);
       } catch (error) {
         showStatus(
           "getStatus",
-          error.message || "Có lỗi xảy ra.",
+          error.message || "Không thể mở Link4M. Vui lòng thử lại.",
           "error"
         );
-      } finally {
+
         button.disabled = false;
         button.textContent = "LẤY KEY NGAY";
       }
-    });
+    }
 
-    // ===== COPY KEY =====
+    $("getKeyButton").addEventListener("click", startLink4M);
+
+    // Sao chép key nếu key đã được máy chủ cấp và hiển thị.
     $("copyButton").addEventListener("click", async () => {
-      const key = $("keyValue").textContent;
+      const key = $("keyValue").textContent.trim();
+      if (!key) return;
 
       try {
         await navigator.clipboard.writeText(key);
@@ -398,17 +506,17 @@
 
         showStatus(
           "getStatus",
-          "Hãy sao chép key đang được chọn.",
-          "success"
+          "Key đã được chọn trong ô nhập. Hãy sao chép thủ công.",
+          "info"
         );
       }
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         $("copyButton").textContent = "Sao chép Key";
       }, 1500);
     });
 
-    // ===== VALIDATE KEY =====
+    // Xác nhận key thông qua Supabase.
     $("validateForm").addEventListener("submit", async event => {
       event.preventDefault();
 
@@ -431,23 +539,29 @@
           key: key
         });
 
-        if (!data.success || !data.valid) {
+        if (data.success !== true || data.valid !== true) {
           throw new Error(
-            data.message || data.error || "Key không hợp lệ."
+            data.message ||
+            data.error ||
+            "Key không hợp lệ hoặc không thuộc hồ sơ trình duyệt này."
           );
         }
 
         $("contentTitle").textContent =
-          data.title || "Nội dung của bạn";
+          typeof data.title === "string" && data.title
+            ? data.title
+            : "Nội dung của bạn";
 
         $("contentText").textContent =
-          data.content || "Nội dung hiện chưa có.";
+          typeof data.content === "string" && data.content
+            ? data.content
+            : "Nội dung hiện chưa có.";
 
         $("contentBox").style.display = "block";
 
         showStatus(
           "validateStatus",
-          "Xác nhận thành công!",
+          "Xác nhận key thành công!",
           "success"
         );
       } catch (error) {
@@ -461,6 +575,30 @@
         button.textContent = "XÁC NHẬN KEY";
       }
     });
+
+    // Chỉ thông báo khi quay lại từ Link4M.
+    // Không cấp key tự động dựa trên query parameter.
+    (function handleLink4MReturn() {
+      const url = new URL(window.location.href);
+
+      if (url.searchParams.get("link4m_return") !== "1") {
+        return;
+      }
+
+      url.searchParams.delete("link4m_return");
+
+      window.history.replaceState(
+        {},
+        document.title,
+        url.pathname + url.search + url.hash
+      );
+
+      showStatus(
+        "getStatus",
+        "Bạn đã quay lại KEY CENTER. Website chưa thể xác minh việc hoàn thành Link4M chỉ từ đường dẫn quay lại, nên chưa cấp key. Cần tích hợp callback hoặc API xác minh ở phía máy chủ.",
+        "info"
+      );
+    })();
   </script>
 </body>
 </html>
