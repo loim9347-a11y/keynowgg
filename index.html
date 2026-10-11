@@ -1,444 +1,330 @@
-```html
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#07140f">
-  <title>KEY CENTER — Nhận Key</title>
+  <meta name="theme-color" content="#080d0b">
+  <title>KEY CENTER</title>
 
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #06110d;
-      --green: #50f59b;
-      --text: #f1fff7;
-      --muted: #9bb5a7;
-      --danger: #ff8181;
-      --success: #70ffae;
+      --bg: #080d0b;
+      --card: #111915;
+      --green: #39f58a;
+      --text: #f2fff6;
+      --muted: #8d9b92;
+      --border: #26382e;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      margin: 0;
       min-height: 100vh;
       padding: 28px 16px;
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(ellipse at 15% 10%, rgba(27,151,86,.17), transparent 38%),
-        radial-gradient(ellipse at 90% 85%, rgba(24,112,74,.15), transparent 35%),
-        var(--bg);
-      color: var(--text);
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
-    }
-
-    .shell {
-      width: 100%;
-      max-width: 620px;
-    }
-
-    .brand {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 11px;
-      margin-bottom: 18px;
-      color: var(--green);
-      font-size: 13px;
-      font-weight: 850;
-      letter-spacing: .22em;
+      background:
+        radial-gradient(ellipse at top, #153725 0%, transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
     }
 
-    .brand-mark {
-      width: 32px;
-      height: 32px;
+    .container {
+      width: 100%;
+      max-width: 430px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo {
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 14px;
       display: grid;
       place-items: center;
-      border: 1px solid rgba(80,245,155,.55);
-      border-radius: 10px;
-      background: rgba(80,245,155,.1);
-    }
-
-    .card {
-      padding: clamp(22px, 5vw, 38px);
-      border: 1px solid rgba(111,255,174,.17);
-      border-radius: 25px;
-      background: linear-gradient(150deg, #0f2219, #07130e);
-      box-shadow: 0 24px 80px rgba(0,0,0,.38);
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 11px;
-      border: 1px solid rgba(80,245,155,.2);
-      border-radius: 999px;
-      background: rgba(80,245,155,.07);
+      border: 1px solid #39f58a70;
+      border-radius: 17px;
+      background: #39f58a12;
       color: var(--green);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .1em;
-    }
-
-    .pulse {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 12px var(--green);
+      font-size: 27px;
+      font-weight: 900;
+      box-shadow: 0 0 35px #39f58a12;
     }
 
     h1 {
-      margin: 18px 0 10px;
-      font-size: clamp(30px, 6vw, 43px);
-      line-height: 1.08;
-      letter-spacing: -.045em;
+      font-size: 29px;
+      letter-spacing: 3px;
+      font-weight: 900;
     }
 
-    h1 span { color: var(--green); }
+    h1 span {
+      color: var(--green);
+    }
 
-    .intro {
-      margin: 0;
+    .subtitle {
+      margin-top: 8px;
       color: var(--muted);
-      font-size: 14px;
-      line-height: 1.75;
+      font-size: 13px;
     }
 
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 9px;
-      margin: 25px 0;
+    .card {
+      padding: 22px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: linear-gradient(145deg, #131d17, #0d130f);
+      box-shadow: 0 12px 35px #00000020;
     }
 
-    .step {
-      min-width: 0;
-      padding: 12px 10px;
-      border: 1px solid rgba(157,197,174,.12);
-      border-radius: 13px;
-      background: rgba(255,255,255,.025);
+    .card-title {
+      margin-bottom: 7px;
+      font-size: 17px;
+      font-weight: 800;
     }
 
-    .step-number {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--green);
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .12em;
+    .description {
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
     }
 
-    .step-label {
-      font-size: 12px;
-      color: #d4e9dc;
-      font-weight: 700;
-    }
-
-    .actions { display: grid; gap: 11px; }
-
-    .button {
+    button {
       width: 100%;
-      min-height: 49px;
-      padding: 13px 17px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      border: 1px solid transparent;
-      border-radius: 13px;
-      font: inherit;
+      min-height: 46px;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 11px;
+      background: var(--green);
+      color: #06120a;
       font-size: 14px;
-      font-weight: 850;
+      font-weight: 800;
       cursor: pointer;
-      transition: transform .18s ease, filter .18s ease;
+      transition: .2s;
     }
 
-    .button:hover:not(:disabled) {
+    button:hover {
+      filter: brightness(1.08);
       transform: translateY(-1px);
-      filter: brightness(1.06);
     }
 
-    .button:disabled {
+    button:disabled {
       opacity: .55;
-      cursor: not-allowed;
+      cursor: wait;
+      transform: none;
     }
 
-    .button-primary {
-      color: #052012;
-      background: linear-gradient(135deg, #74ffb2, #35d984);
+    .key-result {
+      display: none;
+      margin-top: 15px;
+      padding: 14px;
+      border: 1px dashed #39f58a70;
+      border-radius: 11px;
+      background: #39f58a09;
     }
 
-    .button-secondary {
-      color: #eafff2;
-      background: rgba(255,255,255,.035);
-      border-color: rgba(145,191,163,.2);
-    }
-
-    .section {
-      margin-top: 22px;
-      padding-top: 22px;
-      border-top: 1px solid rgba(145,191,163,.14);
-    }
-
-    .section-title {
-      margin-bottom: 10px;
-      color: var(--green);
+    .small-label {
+      margin-bottom: 8px;
+      color: var(--muted);
       font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .14em;
+      letter-spacing: 1px;
     }
 
-    .key-input {
+    .key-value {
+      overflow-wrap: anywhere;
+      color: var(--green);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .copy-btn {
+      margin-top: 12px;
+      min-height: 38px;
+      border: 1px solid var(--border);
+      background: #1b2820;
+      color: var(--text);
+    }
+
+    input {
       width: 100%;
-      min-height: 50px;
-      margin: 0 0 11px;
-      padding: 13px 14px;
-      border: 1px solid rgba(80,245,155,.3);
-      border-radius: 12px;
+      height: 46px;
+      margin-bottom: 12px;
+      padding: 0 13px;
       outline: none;
-      background: rgba(0,0,0,.22);
-      color: #f4fff8;
-      font: 700 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #090e0b;
+      color: var(--text);
+      font-size: 14px;
+      transition: .2s;
     }
 
-    .key-input:focus {
+    input:focus {
       border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(80,245,155,.09);
+      box-shadow: 0 0 0 3px #39f58a12;
+    }
+
+    input::placeholder {
+      color: #66736a;
     }
 
     .status {
       display: none;
-      margin-top: 16px;
-      padding: 12px 14px;
-      border: 1px solid rgba(145,191,163,.16);
-      border-radius: 12px;
-      color: #c5d9cd;
-      background: rgba(255,255,255,.025);
+      margin-top: 13px;
+      padding: 11px 12px;
+      border-radius: 9px;
       font-size: 13px;
-      line-height: 1.6;
+      line-height: 1.5;
       overflow-wrap: anywhere;
     }
 
-    .status.show { display: block; }
-    .status.success { color: var(--success); }
-    .status.error { color: var(--danger); }
-
-    .content-panel {
-      margin-top: 19px;
-      padding: 16px;
-      border: 1px solid rgba(145,191,163,.15);
-      border-radius: 14px;
-      background: rgba(0,0,0,.15);
+    .status.success {
+      display: block;
+      color: var(--green);
+      background: #39f58a10;
+      border: 1px solid #39f58a35;
     }
 
-    .content-panel h2 {
-      margin: 0 0 10px;
-      font-size: 17px;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
+    .status.error {
+      display: block;
+      color: #ff9a9a;
+      background: #ff555510;
+      border: 1px solid #ff555535;
+    }
+
+    .content-result {
+      display: none;
+      margin-top: 15px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #080d0b;
+      border: 1px solid var(--border);
+    }
+
+    .content-result h3 {
+      margin-bottom: 10px;
+      color: var(--green);
+      font-size: 15px;
     }
 
     .content-text {
-      color: #d0e3d7;
-      font-size: 14px;
-      line-height: 1.8;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
-    }
-
-    .notice {
-      margin-top: 20px;
-      padding: 13px 14px;
-      border-radius: 12px;
-      background: rgba(80,245,155,.045);
-      color: var(--muted);
-      font-size: 12px;
+      color: #d8e4dc;
+      font-size: 13px;
       line-height: 1.7;
     }
 
-    .notice strong { color: #d9f8e5; }
-
     footer {
-      padding: 18px 8px 0;
-      color: #648071;
-      font-size: 11px;
+      margin-top: 20px;
       text-align: center;
-      line-height: 1.6;
+      color: #657168;
+      font-size: 11px;
+      letter-spacing: 1px;
     }
 
-    [hidden] { display: none !important; }
+    @media (max-width: 360px) {
+      .card {
+        padding: 17px;
+      }
 
-    @media (max-width: 420px) {
-      body { padding: 18px 12px; }
-      .steps { gap: 6px; }
-      .step { padding: 10px 7px; }
-      .step-label { font-size: 11px; }
-      .card { border-radius: 20px; }
+      h1 {
+        font-size: 25px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <main class="shell">
-    <div class="brand">
-      <div class="brand-mark" aria-hidden="true">⌘</div>
-      <span>KEY CENTER</span>
-    </div>
+  <main class="container">
 
+    <header>
+      <div class="logo">K</div>
+      <h1>KEY <span>CENTER</span></h1>
+      <p class="subtitle">Key của bạn, nội dung của bạn.</p>
+    </header>
+
+    <!-- KHU VỰC LẤY KEY -->
     <section class="card">
-      <div class="eyebrow">
-        <span class="pulse"></span>
-        HỆ THỐNG CẤP KEY
-      </div>
+      <h2 class="card-title">01. Lấy Key</h2>
+      <p class="description">Nhận key riêng của bạn chỉ với một lần nhấn.</p>
 
-      <h1>Mở khóa <span>nội dung</span></h1>
+      <button id="getKeyButton" type="button">LẤY KEY NGAY</button>
 
-      <p class="intro">
-        Lấy liên kết, quay lại nhận key hoặc nhập key đã có để xác minh.
-        Sau khi xác minh thành công, bạn có thể xem nội dung hiện tại
-        và yêu cầu chuyển sang nội dung tiếp theo.
-      </p>
-
-      <div class="steps">
-        <div class="step">
-          <span class="step-number">BƯỚC 01</span>
-          <span class="step-label">Lấy liên kết</span>
-        </div>
-        <div class="step">
-          <span class="step-number">BƯỚC 02</span>
-          <span class="step-label">Nhận / nhập key</span>
-        </div>
-        <div class="step">
-          <span class="step-number">BƯỚC 03</span>
-          <span class="step-label">Hoàn thành</span>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="button button-primary" id="getLinkButton" type="button">
-          ↗ Lấy liên kết nhận Key
-        </button>
-
-        <button class="button button-secondary" id="receiveButton" type="button" hidden>
-          Nhận Key &amp; Nội dung
-        </button>
-      </div>
-
-      <div class="section">
-        <div class="section-title">NHẬP KEY THỦ CÔNG</div>
-
-        <form id="validateForm">
-          <input
-            class="key-input"
-            id="manualKeyInput"
-            type="text"
-            placeholder="Nhập key của bạn tại đây..."
-            autocomplete="off"
-            autocapitalize="characters"
-            spellcheck="false"
-            maxlength="200"
-            required
-            aria-label="Nhập key cần xác nhận"
-          >
-
-          <button class="button button-secondary" id="validateButton" type="submit">
-            Xác nhận Key
-          </button>
-        </form>
-      </div>
-
-      <div class="status" id="statusMessage" role="status" aria-live="polite"></div>
-
-      <div class="section" id="keyResult" hidden>
-        <div class="section-title">KEY ĐÃ XÁC MINH</div>
-
-        <input
-          class="key-input"
-          id="keyOutput"
-          type="text"
-          readonly
-          aria-label="Key đã xác minh"
-        >
-
-        <button class="button button-secondary" id="copyButton" type="button">
+      <div class="key-result" id="keyResult">
+        <div class="small-label">KEY CỦA BẠN</div>
+        <div class="key-value" id="keyValue"></div>
+        <button class="copy-btn" id="copyButton" type="button">
           Sao chép Key
         </button>
-
-        <div class="content-panel">
-          <div class="section-title">NỘI DUNG HIỆN TẠI</div>
-          <h2 id="contentTitle">Nội dung của bạn</h2>
-          <div class="content-text" id="contentOutput">Nội dung sẽ hiển thị ở đây.</div>
-        </div>
-
-        <button
-          class="button button-primary"
-          id="completeButton"
-          type="button"
-          style="margin-top: 15px"
-        >
-          Hoàn thành &amp; Nhận Key Tiếp Theo →
-        </button>
       </div>
 
-      <div class="notice">
-        <strong>Lưu ý:</strong>
-        Key được xác minh ở máy chủ Supabase. Nút hoàn thành sẽ gửi key
-        hiện tại để máy chủ kiểm tra trước khi chuyển nội dung.
-        Việc bấm hoàn thành không chứng minh rằng người dùng đã thực sự đọc nội dung.
+      <div class="status" id="getStatus" role="status"></div>
+    </section>
+
+    <!-- KHU VỰC NHẬP KEY -->
+    <section class="card">
+      <h2 class="card-title">02. Nhập Key</h2>
+      <p class="description">Nhập key để xác nhận và xem nội dung.</p>
+
+      <form id="validateForm">
+        <input
+          id="keyInput"
+          type="text"
+          placeholder="Nhập key của bạn..."
+          maxlength="200"
+          autocomplete="off"
+          required
+        >
+        <button id="validateButton" type="submit">
+          XÁC NHẬN KEY
+        </button>
+      </form>
+
+      <div class="status" id="validateStatus" role="status"></div>
+
+      <div class="content-result" id="contentResult">
+        <h3 id="contentTitle"></h3>
+        <div class="content-text" id="contentText"></div>
       </div>
     </section>
 
-    <footer>KEY CENTER · Hệ thống cấp key theo từng nội dung</footer>
+    <footer>KEY CENTER · SECURE ACCESS</footer>
   </main>
 
   <script>
-    "use strict";
-
+    // ===== CẤU HÌNH SUPABASE =====
     const SUPABASE_URL =
       "https://wxygtmfttyidwnhjdwdw.supabase.co";
 
-    const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4eWd0bWZ0dHlpZHduaGpkd2R3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2NDU2ODgsImV4cCI6MjEwNzIyMTY4OH0.d0XLGnIxohNg4DzmzCmqNZuIDMijKJFta4s8n48CSHE";
+    // Thay bằng Supabase anon/public key hiện tại của bạn.
+    const SUPABASE_ANON_KEY = "DAN_ANON_KEY_CUA_BAN_VAO_DAY";
 
-    const getLinkButton = document.getElementById("getLinkButton");
-    const receiveButton = document.getElementById("receiveButton");
-    const statusMessage = document.getElementById("statusMessage");
-    const validateForm = document.getElementById("validateForm");
-    const manualKeyInput = document.getElementById("manualKeyInput");
-    const validateButton = document.getElementById("validateButton");
-    const keyResult = document.getElementById("keyResult");
-    const keyOutput = document.getElementById("keyOutput");
-    const contentTitle = document.getElementById("contentTitle");
-    const contentOutput = document.getElementById("contentOutput");
-    const copyButton = document.getElementById("copyButton");
-    const completeButton = document.getElementById("completeButton");
+    const FUNCTION_URL =
+      SUPABASE_URL.replace(/\/$/, "") + "/functions/v1/";
 
-    let currentKey = "";
-
-    function setMessage(message, type = "") {
-      statusMessage.textContent = message;
-      statusMessage.className = "status show" + (type ? " " + type : "");
-    }
-
+    // Mỗi hồ sơ trình duyệt giữ một client ID riêng.
     function getClientId() {
       const storageKey = "key_center_client_id_v1";
       let clientId = localStorage.getItem(storageKey);
 
       if (!clientId) {
-        if (window.crypto && typeof window.crypto.randomUUID === "function") {
-          clientId = window.crypto.randomUUID();
-        } else {
-          clientId =
-            "client-" +
-            Date.now().toString(36) +
-            "-" +
+        clientId = crypto.randomUUID
+          ? crypto.randomUUID()
+          : "kc-" + Date.now() + "-" +
             Math.random().toString(36).slice(2) +
             Math.random().toString(36).slice(2);
-        }
 
         localStorage.setItem(storageKey, clientId);
       }
@@ -446,19 +332,37 @@
       return clientId;
     }
 
-    async function callFunction(name, body = {}) {
-      const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/${name}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-          },
-          body: JSON.stringify(body)
-        }
-      );
+    const $ = (id) => document.getElementById(id);
+
+    function setStatus(id, message, type) {
+      const el = $(id);
+      el.textContent = message;
+      el.className = "status " + type;
+    }
+
+    function clearStatus(id) {
+      const el = $(id);
+      el.textContent = "";
+      el.className = "status";
+    }
+
+    async function callFunction(name, payload) {
+      if (
+        !SUPABASE_ANON_KEY ||
+        SUPABASE_ANON_KEY === "DAN_ANON_KEY_CUA_BAN_VAO_DAY"
+      ) {
+        throw new Error("Bạn chưa cấu hình Supabase anon key.");
+      }
+
+      const response = await fetch(FUNCTION_URL + name, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": "Bearer " + SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify(payload)
+      });
 
       let data;
 
@@ -468,144 +372,92 @@
         throw new Error("Máy chủ trả về dữ liệu không hợp lệ.");
       }
 
-      if (!response.ok || !data || data.success !== true) {
+      if (!response.ok) {
         throw new Error(
-          data?.error ||
-          data?.message ||
-          `Yêu cầu thất bại (HTTP ${response.status}).`
+          data.error || "Yêu cầu thất bại. Vui lòng thử lại."
         );
       }
 
       return data;
     }
 
-    function displayKeyAndContent(key, title, content) {
-      currentKey = key;
-      keyOutput.value = key;
-      contentTitle.textContent = title || "Nội dung của bạn";
-      contentOutput.textContent = content || "Chưa có nội dung.";
-      keyResult.hidden = false;
-      completeButton.disabled = false;
-      completeButton.textContent = "Hoàn thành & Nhận Key Tiếp Theo →";
-    }
+    // ===== LẤY KEY =====
+    $("getKeyButton").addEventListener("click", async () => {
+      const button = $("getKeyButton");
 
-    // Nhận diện khi người dùng quay về từ Link4M.
-    function showReturnedState() {
-      receiveButton.hidden = false;
-      getLinkButton.textContent = "Lấy lại liên kết nhận Key";
-      setMessage(
-        "Bạn đã quay lại KEY CENTER. Nhấn “Nhận Key & Nội dung” để tiếp tục.",
-        "success"
-      );
-    }
-
-    const currentUrl = new URL(window.location.href);
-
-    if (currentUrl.searchParams.get("from") === "link4m") {
-      sessionStorage.setItem("key_center_returned_link4m", "1");
-      showReturnedState();
-
-      currentUrl.searchParams.delete("from");
-
-      window.history.replaceState(
-        {},
-        document.title,
-        currentUrl.pathname + currentUrl.search + currentUrl.hash
-      );
-    } else if (
-      sessionStorage.getItem("key_center_returned_link4m") === "1"
-    ) {
-      receiveButton.hidden = false;
-      getLinkButton.textContent = "Lấy lại liên kết nhận Key";
-    }
-
-    // LẤY LIÊN KẾT LINK4M
-    getLinkButton.addEventListener("click", async () => {
-      getLinkButton.disabled = true;
-      const oldText = getLinkButton.textContent;
-      getLinkButton.textContent = "Đang tạo liên kết...";
-
-      setMessage("Đang tạo liên kết nhận key.");
-
-      try {
-        const data = await callFunction("create-link4m", {
-          clientId: getClientId()
-        });
-
-        if (!data.shortenedUrl) {
-          throw new Error("Máy chủ chưa trả về liên kết rút gọn.");
-        }
-
-        const url = new URL(data.shortenedUrl);
-        const allowedHosts = ["link4m.com", "link4m.co", "link4m.net"];
-
-        const allowed =
-          url.protocol === "https:" &&
-          allowedHosts.some(
-            host =>
-              url.hostname === host ||
-              url.hostname.endsWith("." + host)
-          );
-
-        if (!allowed) {
-          throw new Error("Tên miền Link4M trả về không hợp lệ.");
-        }
-
-        window.location.assign(url.href);
-      } catch (error) {
-        console.error("create-link4m:", error);
-        setMessage("Không tạo được liên kết: " + error.message, "error");
-        getLinkButton.disabled = false;
-        getLinkButton.textContent = oldText;
-      }
-    });
-
-    // NHẬN KEY DO MÁY CHỦ CẤP
-    receiveButton.addEventListener("click", async () => {
-      receiveButton.disabled = true;
-      receiveButton.textContent = "Đang nhận key...";
+      button.disabled = true;
+      button.textContent = "ĐANG XỬ LÝ...";
+      clearStatus("getStatus");
 
       try {
         const data = await callFunction("get-key", {
           clientId: getClientId()
         });
 
-        if (!data.key) {
-          throw new Error("Máy chủ chưa cấp key.");
+        if (!data.success || !data.key) {
+          throw new Error(
+            data.message ||
+            data.error ||
+            "Không thể cấp key. Có thể đã hết nội dung."
+          );
         }
 
-        displayKeyAndContent(
-          data.key,
-          data.title,
-          data.content
-        );
+        $("keyValue").textContent = data.key;
+        $("keyInput").value = data.key;
+        $("keyResult").style.display = "block";
 
-        manualKeyInput.value = data.key;
-
-        setMessage("Đã nhận key và nội dung hiện tại.", "success");
+        setStatus("getStatus", "Lấy key thành công!", "success");
       } catch (error) {
-        console.error("get-key:", error);
-        setMessage("Không nhận được key: " + error.message, "error");
+        setStatus(
+          "getStatus",
+          error.message || "Có lỗi xảy ra. Vui lòng thử lại.",
+          "error"
+        );
       } finally {
-        receiveButton.disabled = false;
-        receiveButton.textContent = "Nhận Key & Nội dung";
+        button.disabled = false;
+        button.textContent = "LẤY KEY NGAY";
       }
     });
 
-    // XÁC NHẬN KEY NHẬP THỦ CÔNG QUA EDGE FUNCTION
-    validateForm.addEventListener("submit", async event => {
+    // ===== SAO CHÉP KEY =====
+    $("copyButton").addEventListener("click", async () => {
+      const key = $("keyValue").textContent;
+
+      try {
+        await navigator.clipboard.writeText(key);
+        $("copyButton").textContent = "Đã sao chép!";
+      } catch {
+        $("keyInput").value = key;
+        $("keyInput").focus();
+        $("keyInput").select();
+        setStatus(
+          "getStatus",
+          "Hãy sao chép key đang được chọn.",
+          "success"
+        );
+      }
+
+      setTimeout(() => {
+        $("copyButton").textContent = "Sao chép Key";
+      }, 1600);
+    });
+
+    // ===== XÁC NHẬN KEY =====
+    $("validateForm").addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      const key = manualKeyInput.value.trim();
+      const button = $("validateButton");
+      const key = $("keyInput").value.trim();
 
       if (!key) {
-        setMessage("Vui lòng nhập key trước khi xác nhận.", "error");
-        manualKeyInput.focus();
+        setStatus("validateStatus", "Vui lòng nhập key.", "error");
         return;
       }
 
-      validateButton.disabled = true;
-      validateButton.textContent = "Đang xác minh...";
+      button.disabled = true;
+      button.textContent = "ĐANG KIỂM TRA...";
+      clearStatus("validateStatus");
+      $("contentResult").style.display = "none";
 
       try {
         const data = await callFunction("validate-key", {
@@ -613,125 +465,34 @@
           key: key
         });
 
-        if (data.valid !== true) {
-          throw new Error("Key không hợp lệ hoặc không còn hiệu lực.");
+        if (!data.success || !data.valid) {
+          throw new Error(
+            data.error || data.message || "Key không hợp lệ."
+          );
         }
 
-        displayKeyAndContent(
-          key,
-          data.title,
-          data.content
-        );
+        $("contentTitle").textContent =
+          data.title || "Nội dung của bạn";
 
-        setMessage(
-          "Xác nhận key thành công! Nội dung hiện tại đã được mở.",
+        $("contentText").textContent =
+          data.content || "Nội dung hiện chưa có.";
+
+        $("contentResult").style.display = "block";
+
+        setStatus(
+          "validateStatus",
+          "Key hợp lệ. Xác nhận thành công!",
           "success"
         );
       } catch (error) {
-        console.error("validate-key:", error);
-
-        setMessage(
-          "Xác nhận key thất bại: " + error.message,
+        setStatus(
+          "validateStatus",
+          error.message || "Không thể xác nhận key.",
           "error"
         );
       } finally {
-        validateButton.disabled = false;
-        validateButton.textContent = "Xác nhận Key";
-      }
-    });
-
-    // SAO CHÉP KEY
-    copyButton.addEventListener("click", async () => {
-      if (!currentKey) {
-        setMessage("Chưa có key để sao chép.", "error");
-        return;
-      }
-
-      try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(currentKey);
-        } else {
-          keyOutput.focus();
-          keyOutput.select();
-
-          if (!document.execCommand("copy")) {
-            throw new Error("Không thể sao chép tự động.");
-          }
-        }
-
-        setMessage("Đã sao chép key.", "success");
-      } catch (error) {
-        keyOutput.focus();
-        keyOutput.select();
-
-        setMessage(
-          "Hãy nhấn Ctrl+C để sao chép key đã được chọn.",
-          "error"
-        );
-      }
-    });
-
-    // HOÀN THÀNH NỘI DUNG VÀ NHẬN KEY KẾ TIẾP
-    completeButton.addEventListener("click", async () => {
-      if (!currentKey) {
-        setMessage("Bạn cần nhận hoặc xác nhận key trước.", "error");
-        return;
-      }
-
-      completeButton.disabled = true;
-      completeButton.textContent = "Đang chuyển nội dung...";
-
-      try {
-        const data = await callFunction("complete-content", {
-          clientId: getClientId(),
-          key: currentKey
-        });
-
-        if (data.completedAll) {
-          currentKey = "";
-          keyOutput.value = "";
-          manualKeyInput.value = "";
-
-          contentTitle.textContent = "Đã hoàn thành tất cả";
-          contentOutput.textContent =
-            data.message || "Bạn đã hoàn thành toàn bộ nội dung.";
-
-          completeButton.disabled = true;
-          completeButton.textContent = "Đã hoàn thành";
-
-          setMessage("Bạn đã hoàn thành toàn bộ nội dung!", "success");
-          return;
-        }
-
-        if (!data.key) {
-          throw new Error("Máy chủ chưa cấp key tiếp theo.");
-        }
-
-        displayKeyAndContent(
-          data.key,
-          data.title,
-          data.content
-        );
-
-        manualKeyInput.value = data.key;
-
-        setMessage(
-          "Hoàn thành! Key mới và nội dung tiếp theo đã được cấp.",
-          "success"
-        );
-      } catch (error) {
-        console.error("complete-content:", error);
-
-        setMessage(
-          "Không thể chuyển nội dung: " + error.message,
-          "error"
-        );
-
-        completeButton.textContent = "Thử hoàn thành lại";
-      } finally {
-        if (currentKey) {
-          completeButton.disabled = false;
-        }
+        button.disabled = false;
+        button.textContent = "XÁC NHẬN KEY";
       }
     });
   </script>
