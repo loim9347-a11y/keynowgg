@@ -1,194 +1,499 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Thông báo — Vũ Trụ</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Key Center - Nhận Key</title>
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="description" content="Trang nhận key tự động">
+
   <style>
-    :root{--bg:#050512;--card-bg:rgba(6,8,20,0.55);--accent:#7afcff;--glow:#5ef0ff}
-    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
-    /* canvas bối cảnh */
-    canvas#bg{position:fixed;inset:0;display:block;z-index:0}
+    /* =====================================
+       GIAO DIỆN - CÓ THỂ TÙY CHỈNH TẠI ĐÂY
+       ===================================== */
 
-    /* lớp overlay mờ để làm tối */
-    .overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(2,6,15,0.25),rgba(0,0,0,0.65));z-index:1;pointer-events:none}
+    :root {
+      --bg: #0b0f0d;
+      --panel: #131a16;
+      --green: #40e879;
+      --text: #f3f7f4;
+      --muted: #96a49a;
+      --border: #28362d;
+      --danger: #ff7777;
+    }
 
-    /* hộp thông báo */
-    .panel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;min-width:320px;max-width:900px;padding:36px 28px;border-radius:18px;background:var(--card-bg);backdrop-filter:blur(6px) saturate(120%);box-shadow:0 10px 40px rgba(0,0,0,0.6),0 0 40px rgba(94,240,255,0.06);border:1px solid rgba(127,255,255,0.06);text-align:center;color:#e9f6ff}
+    * {
+      box-sizing: border-box;
+    }
 
-    .logo{font-weight:800;letter-spacing:2px;color:var(--accent);font-size:18px;text-transform:uppercase;text-shadow:0 0 18px rgba(122,252,255,0.08)}
-    h1{margin:14px 0 6px;font-size:24px;line-height:1.1;color:#fff;text-shadow:0 2px 22px rgba(90,200,255,0.08)}
-    p.msg{margin:14px 0 22px;font-size:18px;color:#dbeeff;opacity:0.95}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(ellipse at top, #173222 0%, transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-    /* nút */
-    .actions{display:flex;justify-content:center}
-    button#closeBtn{appearance:none;border:0;padding:12px 28px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));color:#e6fbff;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.5),0 0 18px rgba(94,240,255,0.07);transition:transform .14s ease,filter .14s ease}
-    button#closeBtn:active{transform:translateY(1px) scale(.997)}
-    button#closeBtn:hover{filter:brightness(1.07)}
+    button,
+    input {
+      font: inherit;
+    }
 
-    /* neon accent under the button */
-    .glow-line{height:6px;width:120px;margin:18px auto 0;border-radius:999px;background:linear-gradient(90deg,var(--glow),transparent)}
+    .container {
+      width: 100%;
+      max-width: 410px;
+    }
 
-    /* responsive */
-    @media (max-width:420px){.panel{padding:22px;border-radius:14px}h1{font-size:18px}p.msg{font-size:15px}}
+    .brand {
+      text-align: center;
+      margin-bottom: 22px;
+    }
 
-    /* small cinematic top-left badge */
-    .badge{position:fixed;left:18px;top:18px;z-index:3;color:rgba(255,255,255,0.7);font-size:12px;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));backdrop-filter:blur(4px);box-shadow:0 6px 18px rgba(0,0,0,0.4)}
+    .logo {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 18px;
+      background: #183c27;
+      border: 1px solid #2d6842;
+      color: var(--green);
+      font-size: 29px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 25px;
+      letter-spacing: 1px;
+    }
+
+    .brand p {
+      color: var(--muted);
+      margin: 9px 0 0;
+      font-size: 14px;
+    }
+
+    .card {
+      padding: 24px;
+      background: rgba(19, 26, 22, 0.97);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .status-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px #40e87966;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 21px;
+    }
+
+    .description {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin: 0 0 22px;
+    }
+
+    .button {
+      width: 100%;
+      min-height: 47px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .button:disabled {
+      cursor: wait;
+      opacity: 0.55;
+    }
+
+    .button-primary {
+      background: var(--green);
+      color: #07150c;
+    }
+
+    .button-primary:hover:not(:disabled) {
+      background: #65f393;
+      transform: translateY(-1px);
+    }
+
+    .button-secondary {
+      background: #202c24;
+      color: var(--text);
+      border: 1px solid #35473a;
+      margin-top: 10px;
+    }
+
+    .button-secondary:hover:not(:disabled) {
+      border-color: var(--green);
+    }
+
+    .message {
+      min-height: 20px;
+      margin: 13px 0 0;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .message.error {
+      color: var(--danger);
+    }
+
+    .message.success {
+      color: var(--green);
+    }
+
+    .result {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .result[hidden] {
+      display: none;
+    }
+
+    .result-title {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .key-box {
+      width: 100%;
+      padding: 14px 10px;
+      background: #080d09;
+      color: var(--green);
+      border: 1px solid #304b38;
+      border-radius: 9px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      outline: none;
+    }
+
+    .notice {
+      margin-top: 20px;
+      padding: 12px;
+      background: #101711;
+      border: 1px solid #25362a;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: #68766c;
+    }
+
+    @media (max-width: 380px) {
+      .card {
+        padding: 19px;
+      }
+
+      .brand h1 {
+        font-size: 22px;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <canvas id="bg"></canvas>
-  <div class="overlay"></div>
-  <div class="badge">Vũ Trụ / Hệ Thông Báo</div>
+  <main class="container">
 
-  <section class="panel" role="dialog" aria-labelledby="title" aria-describedby="msg">
-    <div class="logo">App Now Gg</div>
-    <h1 id="title">CHÍNH THỨC DỪNG HOẠT</h1>
-    <p class="msg" id="msg">App Now Gg Chính Thức Dừng Hoạt Động Vĩnh Viễn Do Lỗi Không Thể Sửa</p>
+    <header class="brand">
+      <div class="logo" aria-hidden="true">⌘</div>
+      <h1>KEY CENTER</h1>
+      <p>Hệ thống cấp key tự động</p>
+    </header>
 
-    <div class="actions">
-      <button id="closeBtn" aria-label="Đóng thông báo">Đóng</button>
-    </div>
-    <div class="glow-line" aria-hidden="true"></div>
-  </section>
+    <section class="card">
+      <div class="status-label">
+        <span class="dot"></span>
+        KEY SYSTEM
+      </div>
+
+      <h2>Nhận key của bạn</h2>
+
+      <p class="description">
+        Nhấn nút bên dưới để hệ thống cấp key.
+        Hãy sao chép và lưu lại key sau khi nhận.
+      </p>
+
+      <button
+        class="button button-primary"
+        id="getKeyButton"
+        type="button"
+      >
+        Lấy Key
+      </button>
+
+      <p
+        class="message"
+        id="statusMessage"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+      <div class="result" id="keyResult" hidden>
+        <div class="result-title">KEY CỦA BẠN</div>
+
+        <input
+          class="key-box"
+          id="keyOutput"
+          type="text"
+          readonly
+          aria-label="Key của bạn"
+        >
+
+        <button
+          class="button button-secondary"
+          id="copyButton"
+          type="button"
+        >
+          Sao chép Key
+        </button>
+
+        <button
+          class="button button-primary"
+          id="confirmButton"
+          type="button"
+          style="margin-top: 10px"
+        >
+          Xác nhận &amp; Tiếp tục →
+        </button>
+      </div>
+
+      <div class="notice">
+        <strong>Hướng dẫn:</strong><br>
+        1. Nhấn Lấy Key.<br>
+        2. Sao chép key và lưu lại.<br>
+        3. Nhấn Xác nhận để tiếp tục.
+      </div>
+    </section>
+
+    <footer>
+      KEY CENTER · Powered by Supabase
+    </footer>
+  </main>
 
   <script>
-    // --- Background: simple animated starfield + drifting nebula ---
-    const canvas = document.getElementById('bg');
-    const ctx = canvas.getContext('2d');
-    let W, H, stars = [], nebula = [];
+    /* =========================================
+       CẤU HÌNH - BẠN CHỈ CẦN SỬA 2 DÒNG DƯỚI
+       ========================================= */
 
-    function resize(){
-      W = canvas.width = innerWidth;
-      H = canvas.height = innerHeight;
+    // GHI CHÚ 1:
+    // Đây là Project URL bạn đã cung cấp.
+    const SUPABASE_URL =
+      "https://wxygtmfttyidwnhjdwdw.supabase.co";
+
+    // GHI CHÚ 2:
+    // Dán khóa anon public của ĐÚNG project vào đây.
+    // Không dùng service_role hoặc secret key.
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4eWd0bWZ0dHlpZHduaGpkd2R3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2NDU2ODgsImV4cCI6MjEwNzIyMTY4OH0.d0XLGnIxohNg4DzmzCmqNZuIDMijKJFta4s8n48CSHE";
+
+    // GHI CHÚ 3:
+    // Thay bằng URL WEBSITE CHÍNH của bạn.
+    const MAIN_WEBSITE_URL =
+      "https://example.com/";
+
+    /* =========================================
+       XỬ LÝ LẤY KEY - KHÔNG CẦN SỬA PHẦN NÀY
+       ========================================= */
+
+    const getButton = document.getElementById("getKeyButton");
+    const copyButton = document.getElementById("copyButton");
+    const confirmButton = document.getElementById("confirmButton");
+    const statusMessage = document.getElementById("statusMessage");
+    const keyResult = document.getElementById("keyResult");
+    const keyOutput = document.getElementById("keyOutput");
+
+    let currentKey = "";
+
+    function setMessage(message, type = "") {
+      statusMessage.textContent = message;
+      statusMessage.className = "message " + type;
     }
-    addEventListener('resize', resize);
-    resize();
 
-    // create stars
-    const STAR_COUNT = Math.round((W*H)/6000);
-    function initStars(){
-      stars = [];
-      for(let i=0;i<STAR_COUNT;i++){
-        stars.push({
-          x: Math.random()*W,
-          y: Math.random()*H,
-          z: Math.random()*1.0,
-          r: Math.random()*1.5 + 0.2,
-          vx: (Math.random()-0.5)*0.02
-        });
-      }
-    }
+    function getClientId() {
+      const storageKey = "key_center_client_id_v1";
 
-    // create nebula blobs
-    function initNebula(){
-      nebula = [];
-      const colors = [[120,30,200,0.06],[60,120,255,0.045],[160,40,220,0.04]];
-      for(let i=0;i<3;i++){
-        nebula.push({x:Math.random()*W*1.5 - W*0.25, y:Math.random()*H*1.2 - H*0.1, r:Math.max(W,H)*0.7 + Math.random()*200, col:colors[i], vx:(Math.random()-0.5)*0.1, vy:(Math.random()-0.5)*0.03});
-      }
-    }
+      let clientId = localStorage.getItem(storageKey);
 
-    function draw(){
-      ctx.clearRect(0,0,W,H);
-
-      // dark gradient backdrop
-      const g = ctx.createLinearGradient(0,0,0,H);
-      g.addColorStop(0,'#04030b');
-      g.addColorStop(1,'#000010');
-      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
-
-      // draw nebula soft blobs
-      nebula.forEach(n => {
-        const g2 = ctx.createRadialGradient(n.x, n.y, n.r*0.05, n.x, n.y, n.r);
-        const c = n.col;
-        g2.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},${c[3]})`);
-        g2.addColorStop(0.35, `rgba(${c[0]},${c[1]},${c[2]},${c[3]*0.7})`);
-        g2.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.fillStyle = g2;
-        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI*2); ctx.fill();
-      });
-
-      ctx.globalCompositeOperation = 'source-over';
-
-      // stars
-      for(let i=0;i<stars.length;i++){
-        const s = stars[i];
-        // parallax by z
-        const x = s.x + (1-s.z)*20;
-        const y = s.y;
-        const brightness = 0.6 + 0.4*(1-s.z);
-        ctx.fillStyle = `rgba(255,255,255,${brightness})`;
-        ctx.beginPath(); ctx.arc(x,y,s.r*(1+ (1-s.z)),0,Math.PI*2); ctx.fill();
-
-        // tiny twinkle
-        if(Math.random() < 0.002) ctx.fillStyle = 'rgba(255,255,255,0.95)', ctx.fillRect(x+Math.random()*2-1,y+Math.random()*2-1,1,1);
-
-        s.x += s.vx*(1 + (1-s.z)*2);
-        if(s.x < -5) s.x = W+5; if(s.x > W+5) s.x = -5;
+      if (!clientId) {
+        clientId = crypto.randomUUID();
+        localStorage.setItem(storageKey, clientId);
       }
 
-      // subtle shooting star occasionally
-      if(Math.random() < 0.007){ shoot(); }
-
-      requestAnimationFrame(draw);
+      return clientId;
     }
 
-    // shooting star
-    function shoot(){
-      const sx = Math.random()*W;
-      const sy = Math.random()*H*0.6;
-      const len = 180 + Math.random()*220;
-      const ang = -0.6 - Math.random()*0.6;
-      let t = 0;
-      const speed = 8 + Math.random()*6;
-      function step(){
-        t += 1;
-        const px = sx + Math.cos(ang)*t*speed;
-        const py = sy + Math.sin(ang)*t*speed;
-        const grad = ctx.createLinearGradient(px,py,px+Math.cos(ang)*-len,py+Math.sin(ang)*-len);
-        grad.addColorStop(0,'rgba(255,255,255,0.95)');
-        grad.addColorStop(1,'rgba(255,200,120,0)');
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.fillStyle = grad;
-        ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px+Math.cos(ang)*-len, py+Math.sin(ang)*-len); ctx.lineWidth=2; ctx.stroke();
-        ctx.globalCompositeOperation = 'source-over';
-        if(px > -len && px < W+len && py > -len && py < H+len && t < 60) requestAnimationFrame(step);
+    getButton.addEventListener("click", async () => {
+      if (
+        !SUPABASE_ANON_KEY ||
+        SUPABASE_ANON_KEY === "DAN_ANON_PUBLIC_KEY_VAO_DAY"
+      ) {
+        setMessage(
+          "Bạn chưa điền khóa anon public trong phần cấu hình.",
+          "error"
+        );
+        return;
       }
-      step();
-    }
 
-    // initialize everything
-    function boot(){
-      resize();
-      initStars();
-      initNebula();
-      draw();
-    }
-    boot();
+      getButton.disabled = true;
+      keyResult.hidden = true;
+      currentKey = "";
 
-    // gentle drift for nebula
-    setInterval(()=>{
-      nebula.forEach(n=>{ n.x += n.vx; n.y += n.vy; if(n.x < -W*0.6) n.x = W*1.2; if(n.x > W*1.2) n.x = -W*0.6; if(n.y < -H*0.6) n.y = H*1.2; if(n.y > H*1.2) n.y = -H*0.6; });
-    }, 60);
+      setMessage("Đang kết nối và yêu cầu cấp key...");
 
-    // regenerate on orientation change/resize for clarity
-    let rezTO; addEventListener('resize', ()=>{ clearTimeout(rezTO); rezTO = setTimeout(()=>{ initStars(); initNebula(); },220); });
+      try {
+        const clientId = getClientId();
 
-    // --- Close button behaviour: hide everything and leave blank page ---
-    const closeBtn = document.getElementById('closeBtn');
-    closeBtn.addEventListener('click', ()=>{
-      // visually remove everything immediately
-      document.body.style.transition = 'opacity .18s ease';
-      document.body.style.opacity = '0';
-      // after fade, clear the document so nothing remains
-      setTimeout(()=>{ document.documentElement.innerHTML = ''; }, 190);
+        const response = await fetch(
+          SUPABASE_URL + "/functions/v1/get-key",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "apikey": SUPABASE_ANON_KEY,
+              "Authorization": "Bearer " + SUPABASE_ANON_KEY
+            },
+            body: JSON.stringify({
+              clientId: clientId
+            })
+          }
+        );
+
+        let data;
+
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error(
+            "Máy chủ trả về dữ liệu không hợp lệ."
+          );
+        }
+
+        if (!response.ok || !data.success || !data.key) {
+          throw new Error(
+            data.error || "Không thể cấp key. Hãy thử lại."
+          );
+        }
+
+        currentKey = data.key;
+        keyOutput.value = currentKey;
+        keyResult.hidden = false;
+
+        setMessage(
+          data.reused
+            ? "Đã tìm thấy key đã cấp trước đó."
+            : "Cấp key thành công! Hãy lưu lại key.",
+          "success"
+        );
+
+      } catch (error) {
+        console.error("Get key error:", error);
+
+        setMessage(
+          error.message ||
+          "Không thể kết nối. Hãy kiểm tra mạng và cấu hình.",
+          "error"
+        );
+
+      } finally {
+        getButton.disabled = false;
+      }
     });
 
-    // Accessibility: allow Enter / Space to activate
-    closeBtn.addEventListener('keyup', (e)=>{ if(e.key === 'Enter' || e.key === ' ') closeBtn.click(); });
+    copyButton.addEventListener("click", async () => {
+      if (!currentKey) return;
 
+      try {
+        await navigator.clipboard.writeText(currentKey);
+        setMessage("Đã sao chép key thành công!", "success");
+
+      } catch {
+        keyOutput.focus();
+        keyOutput.select();
+
+        const copied = document.execCommand("copy");
+
+        setMessage(
+          copied
+            ? "Đã sao chép key!"
+            : "Hãy chọn key rồi nhấn Ctrl+C để sao chép.",
+          copied ? "success" : ""
+        );
+      }
+    });
+
+    confirmButton.addEventListener("click", () => {
+      if (!currentKey) {
+        setMessage("Bạn cần lấy key trước.", "error");
+        return;
+      }
+
+      // Kiểm tra URL đích trước khi chuyển trang.
+      try {
+        const destination = new URL(MAIN_WEBSITE_URL);
+
+        if (
+          destination.protocol !== "https:" &&
+          destination.hostname !== "localhost"
+        ) {
+          throw new Error("URL phải sử dụng HTTPS.");
+        }
+
+        window.location.assign(destination.href);
+
+      } catch (error) {
+        console.error("Destination URL error:", error);
+
+        setMessage(
+          "Bạn chưa cấu hình đúng URL website chính.",
+          "error"
+        );
+      }
+    });
   </script>
 </body>
 </html>
