@@ -57,7 +57,7 @@
         <button id="openContentButton" class="secondary-button" type="button" style="display:none">MỞ NỘI DUNG</button>
       </div>
       <div id="getStatus" class="status" role="status" aria-live="polite"></div>
-      <p class="small-note">Trạng Thái : CÒN THIẾT BỊ.</p>
+      <p class="small-note">Mã lượt quay lại được đối chiếu với phiên trình duyệt để hạn chế truy cập nhầm. Việc này không thay thế xác minh hoàn thành nhiệm vụ từ Link4M.</p>
     </section>
 
     <section class="card">
@@ -182,12 +182,27 @@
       button.disabled = true;
       button.textContent = "ĐANG TẠO LIÊN KẾT...";
       clearStatus("getStatus");
+
       try {
-        const data = await callFunction("create-link", { clientId: getClientId() });
+        const clientId = getClientId();
+        const data = await callFunction("create-link", { clientId });
+
         if (data.success !== true) {
           throw new Error(data.message || data.error || "Không thể tạo liên kết Link4M.");
         }
+
         const shortUrl = getShortUrl(data);
+        const attemptId = data.attemptId || data.attempt_id;
+        const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+        if (typeof attemptId !== "string" || !uuidPattern.test(attemptId)) {
+          throw new Error("Máy chủ chưa trả về mã lượt yêu cầu hợp lệ. Hãy kiểm tra lại Edge Function create-link.");
+        }
+
+        // Lưu lượt đang chờ trong phiên trình duyệt để đối chiếu khi quay lại.
+        sessionStorage.setItem("key_center_pending_attempt_v1", attemptId);
+        sessionStorage.setItem("key_center_pending_client_v1", clientId);
+
         showStatus("getStatus", "Đang chuyển đến Link4M...", "info");
         window.location.assign(shortUrl);
       } catch (error) {
@@ -276,8 +291,30 @@
       const url = new URL(window.location.href);
       if (url.searchParams.get("link4m_return") !== "1") return;
 
+      const returnedClientId = url.searchParams.get("client_id");
+      const returnedAttemptId = url.searchParams.get("attempt_id");
+      const expectedClientId = sessionStorage.getItem("key_center_pending_client_v1");
+      const expectedAttemptId = sessionStorage.getItem("key_center_pending_attempt_v1");
+
+      // Xóa các tham số khỏi thanh địa chỉ dù lượt quay lại hợp lệ hay không.
       url.searchParams.delete("link4m_return");
+      url.searchParams.delete("client_id");
+      url.searchParams.delete("attempt_id");
       window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+
+      if (
+        !returnedClientId || !returnedAttemptId ||
+        returnedClientId !== expectedClientId ||
+        returnedClientId !== getClientId() ||
+        returnedAttemptId !== expectedAttemptId
+      ) {
+        showStatus("getStatus", "Không tìm thấy lượt lấy key khớp với phiên này. Hãy nhấn LẤY KEY NGAY để tạo lượt mới.", "error");
+        return;
+      }
+
+      sessionStorage.removeItem("key_center_pending_client_v1");
+      sessionStorage.removeItem("key_center_pending_attempt_v1");
+
       try {
         showStatus("getStatus", "Đang lấy lượt nhận của bạn...", "info");
         const data = await callFunction("get-key", { clientId: getClientId() });
@@ -289,123 +326,5 @@
 
     handleLink4MReturn();
   </script>
-  
-<!-- BẢNG NHẬP KEY -->
-<style>
-  #keyLock {
-    position: fixed;
-    inset: 0;
-    z-index: 999999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: rgba(5, 10, 20, 0.94);
-    font-family: Arial, sans-serif;
-  }
-
-  .key-card {
-    width: 100%;
-    max-width: 380px;
-    padding: 30px 24px;
-    box-sizing: border-box;
-    border: 1px solid #2ecc71;
-    border-radius: 18px;
-    background: #111827;
-    color: white;
-    text-align: center;
-    box-shadow: 0 0 35px rgba(46, 204, 113, 0.18);
-  }
-
-  .key-card h2 {
-    margin: 0 0 10px;
-    color: #2ecc71;
-  }
-
-  .key-card p {
-    color: #cbd5e1;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  #accessKey {
-    width: 100%;
-    box-sizing: border-box;
-    margin: 12px 0;
-    padding: 14px;
-    border: 1px solid #374151;
-    border-radius: 10px;
-    outline: none;
-    background: #0b1220;
-    color: white;
-    font-size: 16px;
-  }
-
-  #unlockBtn {
-    width: 100%;
-    padding: 13px;
-    border: none;
-    border-radius: 10px;
-    background: #2ecc71;
-    color: #07130b;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  #keyError {
-    min-height: 20px;
-    color: #ff6b6b;
-    font-size: 13px;
-  }
-</style>
-
-<div id="keyLock">
-  <div class="key-card">
-    <h2>🔐 KEY CHÍNH</h2>
-    <p>Nhập key đã lấy trong ugphone mod.</p>
-
-    <input
-      id="accessKey"
-      type="password"
-      placeholder="Nhập key của bạn..."
-      autocomplete="off"
-    />
-
-    <button id="unlockBtn" type="button">
-      XÁC NHẬN
-    </button>
-
-    <div id="keyError" role="alert"></div>
-  </div>
-</div>
-
-<script>
-(() => {
-  // Đổi thành key do bạn tự đặt
-  const MY_SECRET_KEY = "Toro_codonleloinaso";
-
-  const lock = document.getElementById("keyLock");
-  const input = document.getElementById("accessKey");
-  const button = document.getElementById("unlockBtn");
-  const error = document.getElementById("keyError");
-
-  function verifyKey() {
-    if (input.value.trim() === MY_SECRET_KEY) {
-      lock.remove();
-    } else {
-      error.textContent = "Key không chính xác. Vui lòng thử lại!";
-      input.value = "";
-      input.focus();
-    }
-  }
-
-  button.addEventListener("click", verifyKey);
-
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") verifyKey();
-  });
-})();
-</script>
 </body>
 </html>
