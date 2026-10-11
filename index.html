@@ -289,5 +289,123 @@
 
     handleLink4MReturn();
   </script>
+  
+<!-- BẢNG NHẬP KEY -->
+<style>
+  #keyLock {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(5, 10, 20, 0.94);
+    font-family: Arial, sans-serif;
+  }
+
+  .key-card {
+    width: 100%;
+    max-width: 380px;
+    padding: 30px 24px;
+    box-sizing: border-box;
+    border: 1px solid #2ecc71;
+    border-radius: 18px;
+    background: #111827;
+    color: white;
+    text-align: center;
+    box-shadow: 0 0 35px rgba(46, 204, 113, 0.18);
+  }
+
+  .key-card h2 {
+    margin: 0 0 10px;
+    color: #2ecc71;
+  }
+
+  .key-card p {
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  #accessKey {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 12px 0;
+    padding: 14px;
+    border: 1px solid #374151;
+    border-radius: 10px;
+    outline: none;
+    background: #0b1220;
+    color: white;
+    font-size: 16px;
+  }
+
+  #unlockBtn {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background: #2ecc71;
+    color: #07130b;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  #keyError {
+    min-height: 20px;
+    color: #ff6b6b;
+    font-size: 13px;
+  }
+</style>
+
+<div id="keyLock">
+  <div class="key-card">
+    <h2>🔐 KEY CENTER</h2>
+    <p>Nhập mã truy cập để tiếp tục vào website.</p>
+
+    <input
+      id="accessKey"
+      type="password"
+      placeholder="Nhập key của bạn..."
+      autocomplete="off"
+    />
+
+    <button id="unlockBtn" type="button">
+      XÁC NHẬN
+    </button>
+
+    <div id="keyError" role="alert"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // Đổi thành key do bạn tự đặt
+  const MY_SECRET_KEY = "KHOI2026";
+
+  const lock = document.getElementById("keyLock");
+  const input = document.getElementById("accessKey");
+  const button = document.getElementById("unlockBtn");
+  const error = document.getElementById("keyError");
+
+  function verifyKey() {
+    if (input.value.trim() === MY_SECRET_KEY) {
+      lock.remove();
+    } else {
+      error.textContent = "Key không chính xác. Vui lòng thử lại!";
+      input.value = "";
+      input.focus();
+    }
+  }
+
+  button.addEventListener("click", verifyKey);
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") verifyKey();
+  });
+})();
+</script>
 </body>
 </html>
