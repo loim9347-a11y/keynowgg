@@ -551,6 +551,7 @@
       try {
         const result = await callFunction("mark-viewed", {
           clientId: getClientId()
+          key: pendingAssignment.key
         });
 
         if (result.success !== true) {
