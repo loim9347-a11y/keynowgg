@@ -241,7 +241,9 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
+      *,
+      *::before,
+      *::after {
         transition: none !important;
       }
     }
@@ -258,9 +260,10 @@
 
     <section class="card">
       <h2>01. Lấy Key</h2>
+
       <p class="description">
-        Hoàn thành bước Link4M trước. Key chỉ được cấp sau khi
-        máy chủ xác minh nhiệm vụ thành công.
+        Nhấn nút bên dưới để tiếp tục đến Link4M.
+        Key chỉ nên được cấp sau khi máy chủ xác minh nhiệm vụ thành công.
       </p>
 
       <button id="getKeyButton" type="button">
@@ -270,23 +273,34 @@
       <div id="keyBox" class="key-box">
         <div class="key-label">KEY CỦA BẠN</div>
         <div id="keyValue" class="key-value"></div>
-        <button id="copyButton" class="secondary-button" type="button">
+
+        <button
+          id="copyButton"
+          class="secondary-button"
+          type="button"
+        >
           Sao chép Key
         </button>
       </div>
 
-      <div id="getStatus" class="status" role="status" aria-live="polite"></div>
+      <div
+        id="getStatus"
+        class="status"
+        role="status"
+        aria-live="polite"
+      ></div>
 
       <p class="small-note">
-        Quay lại từ Link4M không tự động chứng minh bạn đã hoàn thành
-        nhiệm vụ. Hệ thống cần xác minh từ máy chủ trước khi cấp key.
+        Quay lại từ Link4M không tự chứng minh rằng nhiệm vụ đã hoàn thành.
+        Website không tự cấp key chỉ dựa trên đường dẫn quay lại.
       </p>
     </section>
 
     <section class="card">
       <h2>02. Nhập Key</h2>
+
       <p class="description">
-        Nhập key đã được cấp cho bạn để xác nhận và xem nội dung.
+        Nhập key của bạn để xác nhận và xem nội dung được cấp.
       </p>
 
       <form id="validateForm">
@@ -299,12 +313,18 @@
           autocomplete="off"
           required
         >
+
         <button id="validateButton" type="submit">
           XÁC NHẬN KEY
         </button>
       </form>
 
-      <div id="validateStatus" class="status" role="status" aria-live="polite"></div>
+      <div
+        id="validateStatus"
+        class="status"
+        role="status"
+        aria-live="polite"
+      ></div>
 
       <div id="contentBox" class="content-box">
         <h3 id="contentTitle"></h3>
@@ -318,18 +338,19 @@
   <script>
     "use strict";
 
-    // Cấu hình Supabase hiện tại của bạn.
+    // Cấu hình Supabase hiện tại.
     const SUPABASE_URL =
       "https://wxygtmfttyidwnhjdwdw.supabase.co";
 
     const SUPABASE_PUBLISHABLE_KEY =
       "sb_publishable_ax3nIoOvnP1E0qafE_e7kg_2hA3ATbT";
 
-    const FUNCTION_URL = SUPABASE_URL + "/functions/v1/";
+    const FUNCTION_URL =
+      SUPABASE_URL + "/functions/v1/";
 
     const $ = id => document.getElementById(id);
 
-    // Giữ một client ID ổn định trên cùng hồ sơ trình duyệt.
+    // Mỗi hồ sơ trình duyệt giữ một client ID ổn định.
     function getClientId() {
       const storageKey = "key_center_client_id_v1";
 
@@ -349,7 +370,7 @@
         return id;
       } catch {
         throw new Error(
-          "Trình duyệt đang chặn bộ nhớ cục bộ. Hãy bật localStorage rồi tải lại trang."
+          "Trình duyệt đang chặn localStorage. Hãy bật bộ nhớ cục bộ rồi tải lại trang."
         );
       }
     }
@@ -366,6 +387,7 @@
       el.className = "status";
     }
 
+    // Gọi Supabase Edge Function.
     async function callFunction(name, payload) {
       const response = await fetch(
         FUNCTION_URL + encodeURIComponent(name),
@@ -392,26 +414,35 @@
       }
 
       if (!response.ok) {
-        console.error("Supabase function error:", response.status, data);
-
-        const detail = data.message || data.error || data.msg;
+        console.error(
+          "Supabase function error:",
+          response.status,
+          data
+        );
 
         throw new Error(
-          detail
-            ? String(detail)
-            : "Yêu cầu thất bại (HTTP " + response.status + ")."
+          data.message ||
+          data.error ||
+          "Yêu cầu thất bại (HTTP " + response.status + ")."
         );
       }
 
       return data;
     }
 
-    // Kiểm tra URL do create-link trả về.
+    // Kiểm tra liên kết trả về từ create-link.
     function getShortUrl(data) {
       const candidate = data &&
-        (data.shortenedUrl || data.shortened_url || data.url);
+        (
+          data.shortenedUrl ||
+          data.shortened_url ||
+          data.url
+        );
 
-      if (typeof candidate !== "string" || !candidate.trim()) {
+      if (
+        typeof candidate !== "string" ||
+        !candidate.trim()
+      ) {
         throw new Error(
           "Máy chủ chưa trả về liên kết Link4M hợp lệ."
         );
@@ -422,14 +453,17 @@
       try {
         parsed = new URL(candidate);
       } catch {
-        throw new Error("Liên kết Link4M không đúng định dạng.");
+        throw new Error(
+          "Liên kết Link4M không đúng định dạng."
+        );
       }
 
+      // ĐÃ SỬA: cho phép cả link4m.net và link4m.org.
       const allowedHosts = new Set([
+        "link4m.net",
+        "www.link4m.net",
         "link4m.org",
         "www.link4m.org"
-        "link4m.net",
-        "www.link4m.net"
       ]);
 
       if (
@@ -446,7 +480,7 @@
       return parsed.href;
     }
 
-    // Tạo link Link4M, KHÔNG gọi get-key ở bước này.
+    // Tạo liên kết Link4M; không gọi get-key ở bước này.
     async function startLink4M() {
       const button = $("getKeyButton");
 
@@ -482,7 +516,8 @@
       } catch (error) {
         showStatus(
           "getStatus",
-          error.message || "Không thể mở Link4M. Vui lòng thử lại.",
+          error.message ||
+          "Không thể mở Link4M. Vui lòng thử lại.",
           "error"
         );
 
@@ -491,95 +526,116 @@
       }
     }
 
-    $("getKeyButton").addEventListener("click", startLink4M);
+    $("getKeyButton").addEventListener(
+      "click",
+      startLink4M
+    );
 
-    // Sao chép key nếu key đã được máy chủ cấp và hiển thị.
-    $("copyButton").addEventListener("click", async () => {
-      const key = $("keyValue").textContent.trim();
-      if (!key) return;
+    // Sao chép key nếu đã được máy chủ cấp.
+    $("copyButton").addEventListener(
+      "click",
+      async () => {
+        const key = $("keyValue").textContent.trim();
 
-      try {
-        await navigator.clipboard.writeText(key);
-        $("copyButton").textContent = "Đã sao chép!";
-      } catch {
-        $("keyInput").value = key;
-        $("keyInput").focus();
-        $("keyInput").select();
+        if (!key) return;
 
-        showStatus(
-          "getStatus",
-          "Key đã được chọn trong ô nhập. Hãy sao chép thủ công.",
-          "info"
-        );
-      }
+        try {
+          await navigator.clipboard.writeText(key);
+          $("copyButton").textContent = "Đã sao chép!";
+        } catch {
+          $("keyInput").value = key;
+          $("keyInput").focus();
+          $("keyInput").select();
 
-      window.setTimeout(() => {
-        $("copyButton").textContent = "Sao chép Key";
-      }, 1500);
-    });
-
-    // Xác nhận key thông qua Supabase.
-    $("validateForm").addEventListener("submit", async event => {
-      event.preventDefault();
-
-      const button = $("validateButton");
-      const key = $("keyInput").value.trim();
-
-      if (!key) {
-        showStatus("validateStatus", "Vui lòng nhập key.", "error");
-        return;
-      }
-
-      button.disabled = true;
-      button.textContent = "ĐANG KIỂM TRA...";
-      clearStatus("validateStatus");
-      $("contentBox").style.display = "none";
-
-      try {
-        const data = await callFunction("validate-key", {
-          clientId: getClientId(),
-          key: key
-        });
-
-        if (data.success !== true || data.valid !== true) {
-          throw new Error(
-            data.message ||
-            data.error ||
-            "Key không hợp lệ hoặc không thuộc hồ sơ trình duyệt này."
+          showStatus(
+            "getStatus",
+            "Key đã được chọn trong ô nhập. Hãy sao chép thủ công.",
+            "info"
           );
         }
 
-        $("contentTitle").textContent =
-          typeof data.title === "string" && data.title
-            ? data.title
-            : "Nội dung của bạn";
-
-        $("contentText").textContent =
-          typeof data.content === "string" && data.content
-            ? data.content
-            : "Nội dung hiện chưa có.";
-
-        $("contentBox").style.display = "block";
-
-        showStatus(
-          "validateStatus",
-          "Xác nhận key thành công!",
-          "success"
-        );
-      } catch (error) {
-        showStatus(
-          "validateStatus",
-          error.message || "Không thể xác nhận key.",
-          "error"
-        );
-      } finally {
-        button.disabled = false;
-        button.textContent = "XÁC NHẬN KEY";
+        window.setTimeout(() => {
+          $("copyButton").textContent = "Sao chép Key";
+        }, 1500);
       }
-    });
+    );
 
-    // Chỉ thông báo khi quay lại từ Link4M.
-    // Không cấp key tự động dựa trên query parameter.
+    // Xác nhận key qua Supabase.
+    $("validateForm").addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
+
+        const button = $("validateButton");
+        const key = $("keyInput").value.trim();
+
+        if (!key) {
+          showStatus(
+            "validateStatus",
+            "Vui lòng nhập key.",
+            "error"
+          );
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = "ĐANG KIỂM TRA...";
+        clearStatus("validateStatus");
+        $("contentBox").style.display = "none";
+
+        try {
+          const data = await callFunction(
+            "validate-key",
+            {
+              clientId: getClientId(),
+              key: key
+            }
+          );
+
+          if (
+            data.success !== true ||
+            data.valid !== true
+          ) {
+            throw new Error(
+              data.message ||
+              data.error ||
+              "Key không hợp lệ hoặc không thuộc hồ sơ trình duyệt này."
+            );
+          }
+
+          $("contentTitle").textContent =
+            typeof data.title === "string" && data.title
+              ? data.title
+              : "Nội dung của bạn";
+
+          $("contentText").textContent =
+            typeof data.content === "string" && data.content
+              ? data.content
+              : "Nội dung hiện chưa có.";
+
+          $("contentBox").style.display = "block";
+
+          showStatus(
+            "validateStatus",
+            "Xác nhận key thành công!",
+            "success"
+          );
+        } catch (error) {
+          showStatus(
+            "validateStatus",
+            error.message ||
+            "Không thể xác nhận key.",
+            "error"
+          );
+        } finally {
+          button.disabled = false;
+          button.textContent = "XÁC NHẬN KEY";
+        }
+      }
+    );
+
+    // Khi quay lại từ Link4M, chỉ thông báo.
+    // Không cấp key tự động dựa vào query parameter.
     (function handleLink4MReturn() {
       const url = new URL(window.location.href);
 
@@ -597,7 +653,7 @@
 
       showStatus(
         "getStatus",
-        "Bạn đã quay lại KEY CENTER. Website chưa thể xác minh việc hoàn thành Link4M chỉ từ đường dẫn quay lại, nên chưa cấp key. Cần tích hợp callback hoặc API xác minh ở phía máy chủ.",
+        "Bạn đã quay lại KEY CENTER. Hệ thống chưa xác minh được nhiệm vụ Link4M nên chưa cấp key. Cần tích hợp callback hoặc API xác minh ở phía máy chủ.",
         "info"
       );
     })();
