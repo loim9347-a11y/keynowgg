@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#07140f">
-  <meta name="description" content="KEY CENTER - Nhận key và mở khóa nội dung theo từng bước.">
   <title>KEY CENTER — Nhận Key</title>
 
   <style>
@@ -19,9 +18,7 @@
       --success: #70ffae;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -29,7 +26,6 @@
       padding: 28px 16px;
       display: grid;
       place-items: center;
-      overflow-x: hidden;
       background:
         radial-gradient(ellipse at 15% 10%, rgba(27,151,86,.17), transparent 38%),
         radial-gradient(ellipse at 90% 85%, rgba(24,112,74,.15), transparent 35%),
@@ -39,22 +35,9 @@
         "Segoe UI", sans-serif;
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: .14;
-      background-image:
-        linear-gradient(rgba(120,255,180,.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(120,255,180,.05) 1px, transparent 1px);
-      background-size: 38px 38px;
-    }
-
     .shell {
       width: 100%;
       max-width: 620px;
-      position: relative;
     }
 
     .brand {
@@ -77,7 +60,6 @@
       border: 1px solid rgba(80,245,155,.55);
       border-radius: 10px;
       background: rgba(80,245,155,.1);
-      font-size: 16px;
     }
 
     .card {
@@ -117,9 +99,7 @@
       letter-spacing: -.045em;
     }
 
-    h1 span {
-      color: var(--green);
-    }
+    h1 span { color: var(--green); }
 
     .intro {
       margin: 0;
@@ -158,10 +138,7 @@
       font-weight: 700;
     }
 
-    .actions {
-      display: grid;
-      gap: 11px;
-    }
+    .actions { display: grid; gap: 11px; }
 
     .button {
       width: 100%;
@@ -185,11 +162,6 @@
       filter: brightness(1.06);
     }
 
-    .button:focus-visible {
-      outline: 2px solid white;
-      outline-offset: 3px;
-    }
-
     .button:disabled {
       opacity: .55;
       cursor: not-allowed;
@@ -198,13 +170,44 @@
     .button-primary {
       color: #052012;
       background: linear-gradient(135deg, #74ffb2, #35d984);
-      box-shadow: 0 8px 25px rgba(43,213,126,.12);
     }
 
     .button-secondary {
       color: #eafff2;
       background: rgba(255,255,255,.035);
       border-color: rgba(145,191,163,.2);
+    }
+
+    .section {
+      margin-top: 22px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(145,191,163,.14);
+    }
+
+    .section-title {
+      margin-bottom: 10px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .14em;
+    }
+
+    .key-input {
+      width: 100%;
+      min-height: 50px;
+      margin: 0 0 11px;
+      padding: 13px 14px;
+      border: 1px solid rgba(80,245,155,.3);
+      border-radius: 12px;
+      outline: none;
+      background: rgba(0,0,0,.22);
+      color: #f4fff8;
+      font: 700 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .key-input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(80,245,155,.09);
     }
 
     .status {
@@ -216,52 +219,13 @@
       color: #c5d9cd;
       background: rgba(255,255,255,.025);
       font-size: 13px;
-      line-height: 1.55;
+      line-height: 1.6;
       overflow-wrap: anywhere;
     }
 
-    .status.show {
-      display: block;
-    }
-
-    .status.success {
-      color: var(--success);
-      border-color: rgba(112,255,174,.25);
-    }
-
-    .status.error {
-      color: var(--danger);
-      border-color: rgba(255,129,129,.3);
-    }
-
-    .result {
-      margin-top: 22px;
-      padding-top: 22px;
-      border-top: 1px solid rgba(145,191,163,.14);
-    }
-
-    .result-title {
-      margin-bottom: 10px;
-      color: var(--green);
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .14em;
-    }
-
-    .key-box {
-      width: 100%;
-      min-height: 50px;
-      margin-bottom: 11px;
-      padding: 13px 14px;
-      border: 1px dashed rgba(80,245,155,.38);
-      border-radius: 12px;
-      outline: none;
-      background: rgba(0,0,0,.22);
-      color: #f4fff8;
-      font: 750 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      text-align: center;
-      letter-spacing: .04em;
-    }
+    .status.show { display: block; }
+    .status.success { color: var(--success); }
+    .status.error { color: var(--danger); }
 
     .content-panel {
       margin-top: 19px;
@@ -296,9 +260,7 @@
       line-height: 1.7;
     }
 
-    .notice strong {
-      color: #d9f8e5;
-    }
+    .notice strong { color: #d9f8e5; }
 
     footer {
       padding: 18px 8px 0;
@@ -308,38 +270,14 @@
       line-height: 1.6;
     }
 
-    [hidden] {
-      display: none !important;
-    }
+    [hidden] { display: none !important; }
 
     @media (max-width: 420px) {
-      body {
-        padding: 18px 12px;
-      }
-
-      .steps {
-        gap: 6px;
-      }
-
-      .step {
-        padding: 10px 7px;
-      }
-
-      .step-label {
-        font-size: 11px;
-      }
-
-      .card {
-        border-radius: 20px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        transition: none !important;
-      }
+      body { padding: 18px 12px; }
+      .steps { gap: 6px; }
+      .step { padding: 10px 7px; }
+      .step-label { font-size: 11px; }
+      .card { border-radius: 20px; }
     }
   </style>
 </head>
@@ -360,22 +298,20 @@
       <h1>Mở khóa <span>nội dung</span></h1>
 
       <p class="intro">
-        Làm theo từng bước để nhận key và xem nội dung hiện tại.
-        Khi hoàn thành, nhấn nút bên dưới để máy chủ xác nhận key
-        và cấp nội dung tiếp theo.
+        Lấy liên kết, quay lại nhận key hoặc nhập key đã có để xác minh.
+        Sau khi xác minh thành công, bạn có thể xem nội dung hiện tại
+        và yêu cầu chuyển sang nội dung tiếp theo.
       </p>
 
-      <div class="steps" aria-label="Quy trình nhận key">
+      <div class="steps">
         <div class="step">
           <span class="step-number">BƯỚC 01</span>
           <span class="step-label">Lấy liên kết</span>
         </div>
-
         <div class="step">
           <span class="step-number">BƯỚC 02</span>
-          <span class="step-label">Nhận key</span>
+          <span class="step-label">Nhận / nhập key</span>
         </div>
-
         <div class="step">
           <span class="step-number">BƯỚC 03</span>
           <span class="step-label">Hoàn thành</span>
@@ -384,8 +320,7 @@
 
       <div class="actions">
         <button class="button button-primary" id="getLinkButton" type="button">
-          <span aria-hidden="true">↗</span>
-          Lấy liên kết nhận Key
+          ↗ Lấy liên kết nhận Key
         </button>
 
         <button class="button button-secondary" id="receiveButton" type="button" hidden>
@@ -393,17 +328,40 @@
         </button>
       </div>
 
+      <div class="section">
+        <div class="section-title">NHẬP KEY THỦ CÔNG</div>
+
+        <form id="validateForm">
+          <input
+            class="key-input"
+            id="manualKeyInput"
+            type="text"
+            placeholder="Nhập key của bạn tại đây..."
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            maxlength="200"
+            required
+            aria-label="Nhập key cần xác nhận"
+          >
+
+          <button class="button button-secondary" id="validateButton" type="submit">
+            Xác nhận Key
+          </button>
+        </form>
+      </div>
+
       <div class="status" id="statusMessage" role="status" aria-live="polite"></div>
 
-      <div class="result" id="keyResult" hidden>
-        <div class="result-title">KEY CỦA BẠN</div>
+      <div class="section" id="keyResult" hidden>
+        <div class="section-title">KEY ĐÃ XÁC MINH</div>
 
         <input
-          class="key-box"
+          class="key-input"
           id="keyOutput"
           type="text"
           readonly
-          aria-label="Key của bạn"
+          aria-label="Key đã xác minh"
         >
 
         <button class="button button-secondary" id="copyButton" type="button">
@@ -411,11 +369,9 @@
         </button>
 
         <div class="content-panel">
-          <div class="result-title">NỘI DUNG HIỆN TẠI</div>
+          <div class="section-title">NỘI DUNG HIỆN TẠI</div>
           <h2 id="contentTitle">Nội dung của bạn</h2>
-          <div class="content-text" id="contentOutput">
-            Nội dung sẽ hiển thị ở đây.
-          </div>
+          <div class="content-text" id="contentOutput">Nội dung sẽ hiển thị ở đây.</div>
         </div>
 
         <button
@@ -430,23 +386,18 @@
 
       <div class="notice">
         <strong>Lưu ý:</strong>
-        Sau khi hoàn thành nội dung hiện tại, nhấn
-        <strong>“Hoàn thành &amp; Nhận Key Tiếp Theo”</strong>
-        để xác nhận key và chuyển sang nội dung kế tiếp.
-        Không chia sẻ key nếu bạn muốn giữ riêng cho mình.
+        Key được xác minh ở máy chủ Supabase. Nút hoàn thành sẽ gửi key
+        hiện tại để máy chủ kiểm tra trước khi chuyển nội dung.
+        Việc bấm hoàn thành không chứng minh rằng người dùng đã thực sự đọc nội dung.
       </div>
     </section>
 
-    <footer>
-      KEY CENTER · Hệ thống cấp key theo từng nội dung
-    </footer>
+    <footer>KEY CENTER · Hệ thống cấp key theo từng nội dung</footer>
   </main>
 
   <script>
     "use strict";
 
-    // Supabase URL và anon public key.
-    // KHÔNG đặt service_role key hoặc token Link4M trong HTML công khai.
     const SUPABASE_URL =
       "https://wxygtmfttyidwnhjdwdw.supabase.co";
 
@@ -456,6 +407,9 @@
     const getLinkButton = document.getElementById("getLinkButton");
     const receiveButton = document.getElementById("receiveButton");
     const statusMessage = document.getElementById("statusMessage");
+    const validateForm = document.getElementById("validateForm");
+    const manualKeyInput = document.getElementById("manualKeyInput");
+    const validateButton = document.getElementById("validateButton");
     const keyResult = document.getElementById("keyResult");
     const keyOutput = document.getElementById("keyOutput");
     const contentTitle = document.getElementById("contentTitle");
@@ -470,7 +424,6 @@
       statusMessage.className = "status show" + (type ? " " + type : "");
     }
 
-    // Mỗi trình duyệt có một clientId ổn định để máy chủ tìm tiến trình hiện tại.
     function getClientId() {
       const storageKey = "key_center_client_id_v1";
       let clientId = localStorage.getItem(storageKey);
@@ -493,7 +446,6 @@
       return clientId;
     }
 
-    // Gọi Supabase Edge Function.
     async function callFunction(name, body = {}) {
       const response = await fetch(
         `${SUPABASE_URL}/functions/v1/${name}`,
@@ -527,97 +479,91 @@
       return data;
     }
 
+    function displayKeyAndContent(key, title, content) {
+      currentKey = key;
+      keyOutput.value = key;
+      contentTitle.textContent = title || "Nội dung của bạn";
+      contentOutput.textContent = content || "Chưa có nội dung.";
+      keyResult.hidden = false;
+      completeButton.disabled = false;
+      completeButton.textContent = "Hoàn thành & Nhận Key Tiếp Theo →";
+    }
+
+    // Nhận diện khi người dùng quay về từ Link4M.
     function showReturnedState() {
       receiveButton.hidden = false;
       getLinkButton.textContent = "Lấy lại liên kết nhận Key";
-
       setMessage(
         "Bạn đã quay lại KEY CENTER. Nhấn “Nhận Key & Nội dung” để tiếp tục.",
         "success"
       );
     }
 
-    // Kiểm tra có quay lại từ Link4M hay không.
     const currentUrl = new URL(window.location.href);
-    const returnedFromLink4m =
-      currentUrl.searchParams.get("from") === "link4m";
 
-    if (returnedFromLink4m) {
+    if (currentUrl.searchParams.get("from") === "link4m") {
+      sessionStorage.setItem("key_center_returned_link4m", "1");
       showReturnedState();
 
-      // Xóa tham số khỏi thanh địa chỉ sau khi đã nhận diện.
       currentUrl.searchParams.delete("from");
 
-      const cleanUrl =
-        currentUrl.pathname +
-        currentUrl.search +
-        currentUrl.hash;
-
-      window.history.replaceState({}, document.title, cleanUrl);
+      window.history.replaceState(
+        {},
+        document.title,
+        currentUrl.pathname + currentUrl.search + currentUrl.hash
+      );
+    } else if (
+      sessionStorage.getItem("key_center_returned_link4m") === "1"
+    ) {
+      receiveButton.hidden = false;
+      getLinkButton.textContent = "Lấy lại liên kết nhận Key";
     }
 
-    // BƯỚC 1: Yêu cầu máy chủ tạo link Link4M.
+    // LẤY LIÊN KẾT LINK4M
     getLinkButton.addEventListener("click", async () => {
       getLinkButton.disabled = true;
-
       const oldText = getLinkButton.textContent;
       getLinkButton.textContent = "Đang tạo liên kết...";
 
-      setMessage("Đang kết nối với máy chủ để tạo liên kết nhận key.");
+      setMessage("Đang tạo liên kết nhận key.");
 
       try {
         const data = await callFunction("create-link4m", {
           clientId: getClientId()
         });
 
-        const shortenedUrl = data.shortenedUrl;
-
-        if (!shortenedUrl) {
+        if (!data.shortenedUrl) {
           throw new Error("Máy chủ chưa trả về liên kết rút gọn.");
         }
 
-        const parsedUrl = new URL(shortenedUrl);
-
-        const allowedHosts = [
-          "link4m.com",
-          "link4m.co",
-          "link4m.net"
-        ];
+        const url = new URL(data.shortenedUrl);
+        const allowedHosts = ["link4m.com", "link4m.co", "link4m.net"];
 
         const allowed =
-          parsedUrl.protocol === "https:" &&
+          url.protocol === "https:" &&
           allowedHosts.some(
             host =>
-              parsedUrl.hostname === host ||
-              parsedUrl.hostname.endsWith("." + host)
+              url.hostname === host ||
+              url.hostname.endsWith("." + host)
           );
 
         if (!allowed) {
-          throw new Error(
-            "Liên kết trả về không thuộc tên miền Link4M được cho phép."
-          );
+          throw new Error("Tên miền Link4M trả về không hợp lệ.");
         }
 
-        window.location.assign(parsedUrl.href);
+        window.location.assign(url.href);
       } catch (error) {
-        console.error("create-link4m error:", error);
-
-        setMessage(
-          "Không tạo được liên kết: " + error.message,
-          "error"
-        );
-
+        console.error("create-link4m:", error);
+        setMessage("Không tạo được liên kết: " + error.message, "error");
         getLinkButton.disabled = false;
         getLinkButton.textContent = oldText;
       }
     });
 
-    // BƯỚC 2: Nhận key và nội dung hiện tại từ máy chủ.
+    // NHẬN KEY DO MÁY CHỦ CẤP
     receiveButton.addEventListener("click", async () => {
       receiveButton.disabled = true;
       receiveButton.textContent = "Đang nhận key...";
-
-      setMessage("Đang lấy key và nội dung hiện tại từ máy chủ.");
 
       try {
         const data = await callFunction("get-key", {
@@ -628,39 +574,73 @@
           throw new Error("Máy chủ chưa cấp key.");
         }
 
-        currentKey = data.key;
-        keyOutput.value = currentKey;
-
-        contentTitle.textContent =
-          data.title || "Nội dung của bạn";
-
-        contentOutput.textContent =
-          data.content || "Chưa có nội dung.";
-
-        completeButton.disabled = false;
-        completeButton.textContent =
-          "Hoàn thành & Nhận Key Tiếp Theo →";
-
-        keyResult.hidden = false;
-
-        setMessage(
-          "Đã nhận key. Bạn có thể sao chép key và xem nội dung bên dưới.",
-          "success"
+        displayKeyAndContent(
+          data.key,
+          data.title,
+          data.content
         );
+
+        manualKeyInput.value = data.key;
+
+        setMessage("Đã nhận key và nội dung hiện tại.", "success");
       } catch (error) {
-        console.error("get-key error:", error);
-
-        setMessage(
-          "Không nhận được key: " + error.message,
-          "error"
-        );
+        console.error("get-key:", error);
+        setMessage("Không nhận được key: " + error.message, "error");
       } finally {
         receiveButton.disabled = false;
         receiveButton.textContent = "Nhận Key & Nội dung";
       }
     });
 
-    // Sao chép key.
+    // XÁC NHẬN KEY NHẬP THỦ CÔNG QUA EDGE FUNCTION
+    validateForm.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const key = manualKeyInput.value.trim();
+
+      if (!key) {
+        setMessage("Vui lòng nhập key trước khi xác nhận.", "error");
+        manualKeyInput.focus();
+        return;
+      }
+
+      validateButton.disabled = true;
+      validateButton.textContent = "Đang xác minh...";
+
+      try {
+        const data = await callFunction("validate-key", {
+          clientId: getClientId(),
+          key: key
+        });
+
+        if (data.valid !== true) {
+          throw new Error("Key không hợp lệ hoặc không còn hiệu lực.");
+        }
+
+        displayKeyAndContent(
+          key,
+          data.title,
+          data.content
+        );
+
+        setMessage(
+          "Xác nhận key thành công! Nội dung hiện tại đã được mở.",
+          "success"
+        );
+      } catch (error) {
+        console.error("validate-key:", error);
+
+        setMessage(
+          "Xác nhận key thất bại: " + error.message,
+          "error"
+        );
+      } finally {
+        validateButton.disabled = false;
+        validateButton.textContent = "Xác nhận Key";
+      }
+    });
+
+    // SAO CHÉP KEY
     copyButton.addEventListener("click", async () => {
       if (!currentKey) {
         setMessage("Chưa có key để sao chép.", "error");
@@ -674,42 +654,32 @@
           keyOutput.focus();
           keyOutput.select();
 
-          const copied = document.execCommand("copy");
-
-          if (!copied) {
-            throw new Error(
-              "Trình duyệt không cho phép sao chép tự động."
-            );
+          if (!document.execCommand("copy")) {
+            throw new Error("Không thể sao chép tự động.");
           }
         }
 
-        setMessage("Đã sao chép key vào clipboard.", "success");
+        setMessage("Đã sao chép key.", "success");
       } catch (error) {
-        console.error("copy key error:", error);
-
         keyOutput.focus();
         keyOutput.select();
 
         setMessage(
-          "Không sao chép tự động được. Key đã được chọn; hãy nhấn Ctrl+C.",
+          "Hãy nhấn Ctrl+C để sao chép key đã được chọn.",
           "error"
         );
       }
     });
 
-    // BƯỚC 3: Gửi key hiện tại lên máy chủ để xác nhận và chuyển nội dung.
+    // HOÀN THÀNH NỘI DUNG VÀ NHẬN KEY KẾ TIẾP
     completeButton.addEventListener("click", async () => {
       if (!currentKey) {
-        setMessage("Bạn cần nhận key trước.", "error");
+        setMessage("Bạn cần nhận hoặc xác nhận key trước.", "error");
         return;
       }
 
       completeButton.disabled = true;
       completeButton.textContent = "Đang chuyển nội dung...";
-
-      setMessage(
-        "Đang xác nhận key và yêu cầu cấp nội dung tiếp theo."
-      );
 
       try {
         const data = await callFunction("complete-content", {
@@ -717,25 +687,19 @@
           key: currentKey
         });
 
-        // Nếu đã hết nội dung.
         if (data.completedAll) {
           currentKey = "";
           keyOutput.value = "";
+          manualKeyInput.value = "";
 
           contentTitle.textContent = "Đã hoàn thành tất cả";
-
           contentOutput.textContent =
-            data.message ||
-            "Bạn đã hoàn thành toàn bộ nội dung hiện có.";
+            data.message || "Bạn đã hoàn thành toàn bộ nội dung.";
 
           completeButton.disabled = true;
           completeButton.textContent = "Đã hoàn thành";
 
-          setMessage(
-            "Bạn đã hoàn thành toàn bộ nội dung!",
-            "success"
-          );
-
+          setMessage("Bạn đã hoàn thành toàn bộ nội dung!", "success");
           return;
         }
 
@@ -743,25 +707,20 @@
           throw new Error("Máy chủ chưa cấp key tiếp theo.");
         }
 
-        // Cập nhật key và nội dung mới được máy chủ trả về.
-        currentKey = data.key;
-        keyOutput.value = data.key;
+        displayKeyAndContent(
+          data.key,
+          data.title,
+          data.content
+        );
 
-        contentTitle.textContent =
-          data.title || "Nội dung tiếp theo";
-
-        contentOutput.textContent =
-          data.content || "Chưa có nội dung.";
+        manualKeyInput.value = data.key;
 
         setMessage(
           "Hoàn thành! Key mới và nội dung tiếp theo đã được cấp.",
           "success"
         );
-
-        completeButton.textContent =
-          "Hoàn thành & Nhận Key Tiếp Theo →";
       } catch (error) {
-        console.error("complete-content error:", error);
+        console.error("complete-content:", error);
 
         setMessage(
           "Không thể chuyển nội dung: " + error.message,
@@ -778,4 +737,3 @@
   </script>
 </body>
 </html>
-```
