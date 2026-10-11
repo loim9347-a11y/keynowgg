@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -7,248 +6,38 @@
   <meta name="theme-color" content="#080d0b">
   <meta name="description" content="KEY CENTER - Nhận key và nội dung riêng">
   <title>KEY CENTER</title>
-
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #080d0b;
-      --green: #39f58a;
-      --text: #f2fff6;
-      --muted: #91a096;
-      --border: #28392f;
-      --danger: #ff9999;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      padding: 24px 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background:
-        radial-gradient(ellipse at top, #163b27 0%, transparent 55%),
-        var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 440px;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
-    .logo {
-      width: 52px;
-      height: 52px;
-      margin: 0 auto 13px;
-      display: grid;
-      place-items: center;
-      border: 1px solid #39f58a70;
-      border-radius: 15px;
-      color: var(--green);
-      background: #39f58a12;
-      font-size: 27px;
-      font-weight: 900;
-    }
-
-    h1 {
-      font-size: 28px;
-      letter-spacing: 3px;
-    }
-
-    h1 span {
-      color: var(--green);
-    }
-
-    .subtitle {
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .card {
-      padding: 21px;
-      margin-bottom: 15px;
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      background: linear-gradient(145deg, #131d17, #0c120e);
-      box-shadow: 0 12px 35px #0003;
-    }
-
-    .card h2 {
-      margin-bottom: 7px;
-      font-size: 17px;
-    }
-
-    .description {
-      margin-bottom: 17px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    button {
-      width: 100%;
-      min-height: 46px;
-      padding: 12px;
-      border: 0;
-      border-radius: 10px;
-      background: var(--green);
-      color: #06120a;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform .15s ease, opacity .15s ease;
-    }
-
-    button:hover:not(:disabled) {
-      transform: translateY(-1px);
-    }
-
-    button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
-
-    button:focus-visible,
-    input:focus-visible {
-      outline: 2px solid var(--green);
-      outline-offset: 3px;
-    }
-
-    input {
-      width: 100%;
-      height: 46px;
-      margin-bottom: 12px;
-      padding: 0 13px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      outline: none;
-      background: #090e0b;
-      color: var(--text);
-      font-size: 14px;
-    }
-
-    input:focus {
-      border-color: var(--green);
-    }
-
-    input::placeholder {
-      color: #77847a;
-    }
-
-    .key-box,
-    .content-box {
-      display: none;
-      margin-top: 14px;
-      padding: 13px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: #080d0b;
-    }
-
-    .key-label {
-      margin-bottom: 8px;
-      color: var(--muted);
-      font-size: 11px;
-      letter-spacing: 1px;
-    }
-
-    .key-value {
-      color: var(--green);
-      font-size: 16px;
-      font-weight: 800;
-      overflow-wrap: anywhere;
-    }
-
-    .secondary-button {
-      margin-top: 12px;
-      border: 1px solid var(--border);
-      background: #1a2820;
-      color: var(--text);
-    }
-
-    .status {
-      display: none;
-      margin-top: 12px;
-      padding: 11px;
-      border-radius: 9px;
-      font-size: 13px;
-      line-height: 1.6;
-      overflow-wrap: anywhere;
-    }
-
-    .status.success {
-      display: block;
-      border: 1px solid #39f58a40;
-      background: #39f58a0d;
-      color: var(--green);
-    }
-
-    .status.error {
-      display: block;
-      border: 1px solid #ff656540;
-      background: #ff65650d;
-      color: var(--danger);
-    }
-
-    .status.info {
-      display: block;
-      border: 1px solid #8ba9ff40;
-      background: #8ba9ff0d;
-      color: #b8c9ff;
-    }
-
-    .content-box h3 {
-      margin-bottom: 9px;
-      color: var(--green);
-      font-size: 15px;
-    }
-
-    .content-text {
-      color: #dbe6de;
-      font-size: 13px;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    .small-note {
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.6;
-    }
-
-    footer {
-      margin-top: 20px;
-      color: #68766c;
-      text-align: center;
-      font-size: 11px;
-      letter-spacing: 1px;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        transition: none !important;
-      }
-    }
+    :root{color-scheme:dark;--bg:#080d0b;--green:#39f58a;--text:#f2fff6;--muted:#91a096;--border:#28392f;--danger:#ff9999}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{min-height:100vh;padding:24px 15px;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at top,#163b27 0%,transparent 55%),var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+    .container{width:100%;max-width:440px}
+    header{text-align:center;margin-bottom:25px}
+    .logo{width:52px;height:52px;margin:0 auto 13px;display:grid;place-items:center;border:1px solid #39f58a70;border-radius:15px;color:var(--green);background:#39f58a12;font-size:27px;font-weight:900}
+    h1{font-size:28px;letter-spacing:3px}h1 span{color:var(--green)}
+    .subtitle{margin-top:7px;color:var(--muted);font-size:13px}
+    .card{padding:21px;margin-bottom:15px;border:1px solid var(--border);border-radius:17px;background:linear-gradient(145deg,#131d17,#0c120e);box-shadow:0 12px 35px #0003}
+    .card h2{margin-bottom:7px;font-size:17px}
+    .description{margin-bottom:17px;color:var(--muted);font-size:13px;line-height:1.6}
+    button{width:100%;min-height:46px;padding:12px;border:0;border-radius:10px;background:var(--green);color:#06120a;font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s ease,opacity .15s ease}
+    button:hover:not(:disabled){transform:translateY(-1px)}button:disabled{opacity:.6;cursor:wait}
+    button:focus-visible,input:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+    input{width:100%;height:46px;margin-bottom:12px;padding:0 13px;border:1px solid var(--border);border-radius:10px;outline:none;background:#090e0b;color:var(--text);font-size:14px}
+    input:focus{border-color:var(--green)}input::placeholder{color:#77847a}
+    .key-box,.content-box{display:none;margin-top:14px;padding:13px;border:1px solid var(--border);border-radius:10px;background:#080d0b}
+    .key-label{margin-bottom:8px;color:var(--muted);font-size:11px;letter-spacing:1px}
+    .key-value{color:var(--green);font-size:16px;font-weight:800;overflow-wrap:anywhere}
+    .secondary-button{margin-top:12px;border:1px solid var(--border);background:#1a2820;color:var(--text)}
+    .status{display:none;margin-top:12px;padding:11px;border-radius:9px;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+    .status.success{display:block;border:1px solid #39f58a40;background:#39f58a0d;color:var(--green)}
+    .status.error{display:block;border:1px solid #ff656540;background:#ff65650d;color:var(--danger)}
+    .status.info{display:block;border:1px solid #8ba9ff40;background:#8ba9ff0d;color:#b8c9ff}
+    .content-box h3{margin-bottom:9px;color:var(--green);font-size:15px}
+    .content-text{color:#dbe6de;font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+    .small-note{margin-top:12px;color:var(--muted);font-size:11px;line-height:1.6}
+    footer{margin-top:20px;color:#68766c;text-align:center;font-size:11px;letter-spacing:1px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
   </style>
 </head>
-
 <body>
   <main class="container">
     <header>
@@ -259,86 +48,40 @@
 
     <section class="card">
       <h2>01. Lấy Key</h2>
-      <p class="description">
-        Nhấn nút bên dưới để đi đến Link4M.
-        Khi quay lại, hệ thống sẽ lấy lượt nhận của bạn.
-      </p>
-
+      <p class="description">Nhấn nút bên dưới để đi đến Link4M. Khi quay lại, hệ thống sẽ lấy lượt nhận của bạn.</p>
       <button id="getKeyButton" type="button">LẤY KEY NGAY</button>
-
       <div id="keyBox" class="key-box">
         <div class="key-label">KEY CỦA BẠN</div>
         <div id="keyValue" class="key-value"></div>
-
-        <button id="copyButton" class="secondary-button" type="button">
-          Sao chép Key
-        </button>
-
-        <button
-          id="openContentButton"
-          class="secondary-button"
-          type="button"
-          style="display:none"
-        >
-          MỞ NỘI DUNG
-        </button>
+        <button id="copyButton" class="secondary-button" type="button">Sao chép Key</button>
+        <button id="openContentButton" class="secondary-button" type="button" style="display:none">MỞ NỘI DUNG</button>
       </div>
-
       <div id="getStatus" class="status" role="status" aria-live="polite"></div>
-
-      <p class="small-note">
-        Website không xác minh việc hoàn thành Link4M. Người truy cập trực tiếp
-        đường dẫn quay lại cũng có thể thử lấy key.
-      </p>
+      <p class="small-note">Website không xác minh việc hoàn thành Link4M. Người truy cập trực tiếp đường dẫn quay lại cũng có thể thử lấy key.</p>
     </section>
 
     <section class="card">
       <h2>02. Nhập Key</h2>
-      <p class="description">
-        Nhập key để kiểm tra lượt nhận của bạn.
-      </p>
-
+      <p class="description">Nhập key để kiểm tra lượt nhận của bạn.</p>
       <form id="validateForm">
-        <input
-          id="keyInput"
-          name="key"
-          type="text"
-          maxlength="200"
-          placeholder="Nhập key của bạn..."
-          autocomplete="off"
-          required
-        >
+        <input id="keyInput" name="key" type="text" maxlength="200" placeholder="Nhập key của bạn..." autocomplete="off" required>
         <button id="validateButton" type="submit">XÁC NHẬN KEY</button>
       </form>
-
-      <div
-        id="validateStatus"
-        class="status"
-        role="status"
-        aria-live="polite"
-      ></div>
-
+      <div id="validateStatus" class="status" role="status" aria-live="polite"></div>
       <div id="contentBox" class="content-box">
         <h3 id="contentTitle"></h3>
         <div id="contentText" class="content-text"></div>
-        <button id="closeContentButton" class="secondary-button" type="button">
-          ĐÓNG NỘI DUNG
-        </button>
+        <button id="closeContentButton" class="secondary-button" type="button">ĐÓNG NỘI DUNG</button>
       </div>
     </section>
-
     <footer>KEY CENTER</footer>
   </main>
 
   <script>
     "use strict";
 
-    const SUPABASE_URL =
-      "https://wxygtmfttyidwnhjdwdw.supabase.co";
-
-    const SUPABASE_PUBLISHABLE_KEY =
-      "sb_publishable_ax3nIoOvnP1E0qafE_e7kg_2hA3ATbT";
-
+    const SUPABASE_URL = "https://wxygtmfttyidwnhjdwdw.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ax3nIoOvnP1E0qafE_e7kg_2hA3ATbT";
     const FUNCTION_URL = SUPABASE_URL + "/functions/v1/";
     const $ = id => document.getElementById(id);
 
@@ -347,25 +90,17 @@
 
     function getClientId() {
       const storageKey = "key_center_client_id_v1";
-
       try {
         let id = localStorage.getItem(storageKey);
-
         if (!id) {
-          id = crypto.randomUUID
+          id = (typeof crypto !== "undefined" && crypto.randomUUID)
             ? crypto.randomUUID()
-            : "kc-" + Date.now().toString(36) + "-" +
-              Math.random().toString(36).slice(2) +
-              Math.random().toString(36).slice(2);
-
+            : "kc-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
           localStorage.setItem(storageKey, id);
         }
-
         return id;
       } catch {
-        throw new Error(
-          "Trình duyệt đang chặn localStorage. Hãy bật bộ nhớ cục bộ rồi tải lại trang."
-        );
+        throw new Error("Trình duyệt đang chặn localStorage. Hãy bật bộ nhớ cục bộ rồi tải lại trang.");
       }
     }
 
@@ -381,21 +116,17 @@
     }
 
     async function callFunction(name, payload) {
-      const response = await fetch(
-        FUNCTION_URL + encodeURIComponent(name),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_PUBLISHABLE_KEY,
-            "Authorization": "Bearer " + SUPABASE_PUBLISHABLE_KEY
-          },
-          body: JSON.stringify(payload)
-        }
-      );
+      const response = await fetch(FUNCTION_URL + encodeURIComponent(name), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_PUBLISHABLE_KEY,
+          "Authorization": "Bearer " + SUPABASE_PUBLISHABLE_KEY
+        },
+        body: JSON.stringify(payload)
+      });
 
       let data;
-
       try {
         data = await response.json();
       } catch {
@@ -404,81 +135,46 @@
 
       if (!response.ok) {
         console.error("Edge Function error:", response.status, data);
-        throw new Error(
-          data.message || data.error ||
-          "Yêu cầu thất bại (HTTP " + response.status + ")."
-        );
+        throw new Error(data.message || data.error || "Yêu cầu thất bại (HTTP " + response.status + ").");
       }
-
       return data;
     }
 
     function getShortUrl(data) {
-      const candidate = data &&
-        (data.shortenedUrl || data.shortened_url || data.url);
-
+      const candidate = data && (data.shortenedUrl || data.shortened_url || data.url);
       if (typeof candidate !== "string" || !candidate.trim()) {
         throw new Error("Máy chủ chưa trả về liên kết Link4M.");
       }
-
       let parsed;
-
       try {
         parsed = new URL(candidate);
       } catch {
         throw new Error("Liên kết Link4M không đúng định dạng.");
       }
-
-      const allowedHosts = new Set([
-        "link4m.net",
-        "www.link4m.net",
-        "link4m.org",
-        "www.link4m.org"
-      ]);
-
-      if (
-        parsed.protocol !== "https:" ||
-        !allowedHosts.has(parsed.hostname.toLowerCase()) ||
-        parsed.username ||
-        parsed.password
-      ) {
-        throw new Error(
-          "Liên kết trả về không thuộc tên miền Link4M được phép."
-        );
+      const allowedHosts = new Set(["link4m.net", "www.link4m.net", "link4m.org", "www.link4m.org"]);
+      if (parsed.protocol !== "https:" || !allowedHosts.has(parsed.hostname.toLowerCase()) || parsed.username || parsed.password) {
+        throw new Error("Liên kết trả về không thuộc tên miền Link4M được phép.");
       }
-
       return parsed.href;
     }
 
     function prepareAssignment(data) {
-      if (
-        !data ||
-        data.success !== true ||
-        typeof data.key !== "string" ||
-        typeof data.content !== "string"
-      ) {
-        throw new Error(
-          data?.message || data?.error ||
-          "Không có lượt nhận khả dụng."
-        );
+      if (!data || data.success !== true || typeof data.key !== "string" || typeof data.content !== "string") {
+        throw new Error((data && (data.message || data.error)) || "Không có lượt nhận khả dụng.");
       }
-
       pendingAssignment = {
         key: data.key,
         title: data.title || "Nội dung của bạn",
         content: data.content
       };
-
+      viewedInThisPage = false;
       $("keyValue").textContent = data.key;
       $("keyBox").style.display = "block";
       $("openContentButton").style.display = "block";
+      $("openContentButton").disabled = false;
       $("contentBox").style.display = "none";
-
-      showStatus(
-        "getStatus",
-        "Đã giữ key và nội dung cho bạn. Nhấn MỞ NỘI DUNG khi sẵn sàng.",
-        "success"
-      );
+      clearStatus("validateStatus");
+      showStatus("getStatus", "Đã giữ key và nội dung cho bạn. Nhấn MỞ NỘI DUNG khi sẵn sàng.", "success");
     }
 
     async function startLink4M() {
@@ -486,35 +182,16 @@
       button.disabled = true;
       button.textContent = "ĐANG TẠO LIÊN KẾT...";
       clearStatus("getStatus");
-
       try {
-        const data = await callFunction("create-link", {
-          clientId: getClientId()
-        });
-
+        const data = await callFunction("create-link", { clientId: getClientId() });
         if (data.success !== true) {
-          throw new Error(
-            data.message || data.error ||
-            "Không thể tạo liên kết Link4M."
-          );
+          throw new Error(data.message || data.error || "Không thể tạo liên kết Link4M.");
         }
-
         const shortUrl = getShortUrl(data);
-
-        showStatus(
-          "getStatus",
-          "Đang chuyển đến Link4M...",
-          "info"
-        );
-
+        showStatus("getStatus", "Đang chuyển đến Link4M...", "info");
         window.location.assign(shortUrl);
       } catch (error) {
-        showStatus(
-          "getStatus",
-          error.message || "Không thể mở Link4M.",
-          "error"
-        );
-
+        showStatus("getStatus", error.message || "Không thể mở Link4M.", "error");
         button.disabled = false;
         button.textContent = "LẤY KEY NGAY";
       }
@@ -525,60 +202,35 @@
     $("copyButton").addEventListener("click", async () => {
       const key = $("keyValue").textContent.trim();
       if (!key) return;
-
       try {
         await navigator.clipboard.writeText(key);
         $("copyButton").textContent = "Đã sao chép!";
       } catch {
-        showStatus(
-          "getStatus",
-          "Không sao chép tự động được. Bạn có thể chọn key rồi sao chép thủ công.",
-          "info"
-        );
+        showStatus("getStatus", "Không sao chép tự động được. Bạn có thể chọn key rồi sao chép thủ công.", "info");
       }
-
-      window.setTimeout(() => {
-        $("copyButton").textContent = "Sao chép Key";
-      }, 1500);
+      window.setTimeout(() => { $("copyButton").textContent = "Sao chép Key"; }, 1500);
     });
 
     $("openContentButton").addEventListener("click", async () => {
       if (!pendingAssignment || viewedInThisPage) return;
-
       const button = $("openContentButton");
       button.disabled = true;
-
       try {
         const result = await callFunction("mark-viewed", {
           clientId: getClientId(),
           key: pendingAssignment.key
         });
-
         if (result.success !== true) {
-          throw new Error(
-            result.message || result.error ||
-            "Không thể ghi nhận trạng thái xem."
-          );
+          throw new Error(result.message || result.error || "Không thể ghi nhận trạng thái xem.");
         }
-
         viewedInThisPage = true;
-
         $("contentTitle").textContent = pendingAssignment.title;
         $("contentText").textContent = pendingAssignment.content;
         $("contentBox").style.display = "block";
         button.style.display = "none";
-
-        showStatus(
-          "validateStatus",
-          "Nội dung đã mở. Đóng lại sẽ ẩn nội dung khỏi giao diện.",
-          "success"
-        );
+        showStatus("validateStatus", "Nội dung đã mở. Đóng lại sẽ ẩn nội dung khỏi giao diện.", "success");
       } catch (error) {
-        showStatus(
-          "validateStatus",
-          error.message || "Không thể mở nội dung.",
-          "error"
-        );
+        showStatus("validateStatus", error.message || "Không thể mở nội dung.", "error");
       } finally {
         button.disabled = false;
       }
@@ -591,60 +243,29 @@
       $("keyValue").textContent = "";
       $("keyInput").value = "";
       pendingAssignment = null;
-
-      showStatus(
-        "validateStatus",
-        "Đã đóng nội dung. Nội dung đã mở không được cấp lại cho người khác.",
-        "info"
-      );
+      showStatus("validateStatus", "Đã đóng nội dung. Lượt đã mở vẫn được ghi nhận trong hệ thống.", "info");
     });
 
     $("validateForm").addEventListener("submit", async event => {
       event.preventDefault();
-
       const button = $("validateButton");
       const key = $("keyInput").value.trim();
-
       if (!key) {
         showStatus("validateStatus", "Vui lòng nhập key.", "error");
         return;
       }
-
       button.disabled = true;
       button.textContent = "ĐANG KIỂM TRA...";
       clearStatus("validateStatus");
-
       try {
-        const data = await callFunction("validate-key", {
-          clientId: getClientId(),
-          key: key
-        });
-
+        const data = await callFunction("validate-key", { clientId: getClientId(), key });
         if (data.success !== true || data.valid !== true) {
-          throw new Error(
-            data.message || data.error ||
-            "Key không hợp lệ hoặc không thuộc hồ sơ này."
-          );
+          throw new Error(data.message || data.error || "Key không hợp lệ hoặc không thuộc hồ sơ này.");
         }
-
-        prepareAssignment({
-          success: true,
-          key: key,
-          title: data.title,
-          content: data.content
-        });
-
-        showStatus(
-          "validateStatus",
-          "Key hợp lệ. Nhấn MỞ NỘI DUNG khi sẵn sàng.",
-          "success"
-        );
+        prepareAssignment({ success: true, key, title: data.title, content: data.content });
+        showStatus("validateStatus", "Key hợp lệ. Nhấn MỞ NỘI DUNG khi sẵn sàng.", "success");
       } catch (error) {
-        showStatus(
-          "validateStatus",
-          error.message || "Không thể xác nhận key.",
-          "error"
-        );
+        showStatus("validateStatus", error.message || "Không thể xác nhận key.", "error");
       } finally {
         button.disabled = false;
         button.textContent = "XÁC NHẬN KEY";
@@ -653,38 +274,16 @@
 
     async function handleLink4MReturn() {
       const url = new URL(window.location.href);
-
-      if (url.searchParams.get("link4m_return") !== "1") {
-        return;
-      }
+      if (url.searchParams.get("link4m_return") !== "1") return;
 
       url.searchParams.delete("link4m_return");
-
-      window.history.replaceState(
-        {},
-        document.title,
-        url.pathname + url.search + url.hash
-      );
-
+      window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
       try {
-        showStatus(
-          "getStatus",
-          "Đang lấy lượt nhận của bạn...",
-          "info"
-        );
-
-        const data = await callFunction("get-key", {
-          clientId: getClientId()
-        });
-
+        showStatus("getStatus", "Đang lấy lượt nhận của bạn...", "info");
+        const data = await callFunction("get-key", { clientId: getClientId() });
         prepareAssignment(data);
       } catch (error) {
-        showStatus(
-          "getStatus",
-          error.message ||
-          "Không thể lấy key. Có thể bạn đã mở nội dung hoặc đã hết nội dung khả dụng.",
-          "error"
-        );
+        showStatus("getStatus", error.message || "Không thể lấy key. Có thể bạn đã mở nội dung hoặc đã hết nội dung khả dụng.", "error");
       }
     }
 
