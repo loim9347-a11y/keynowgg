@@ -1,252 +1,399 @@
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0f0d">
-  <meta name="description" content="KEY CENTER - Hệ thống nhận key tự động">
-  <title>KEY CENTER - Nhận Key</title>
+  <meta name="theme-color" content="#07140f">
+  <meta name="description" content="KEY CENTER - Nhận key và mở khóa nội dung theo từng bước.">
+  <title>KEY CENTER — Nhận Key</title>
 
   <style>
     :root {
-      --bg: #0b0f0d;
-      --panel: #131a16;
-      --green: #40e879;
-      --text: #f3f7f4;
-      --muted: #96a49a;
-      --border: #28362d;
-      --danger: #ff7777;
+      color-scheme: dark;
+      --bg: #06110d;
+      --green: #50f59b;
+      --text: #f1fff7;
+      --muted: #9bb5a7;
+      --danger: #ff8181;
+      --success: #70ffae;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       min-height: 100vh;
-      padding: 24px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 28px 16px;
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
       background:
-        radial-gradient(ellipse at top, #173222 0%, transparent 55%),
+        radial-gradient(ellipse at 15% 10%, rgba(27,151,86,.17), transparent 38%),
+        radial-gradient(ellipse at 90% 85%, rgba(24,112,74,.15), transparent 35%),
         var(--bg);
       color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
     }
 
-    button, input { font: inherit; }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .14;
+      background-image:
+        linear-gradient(rgba(120,255,180,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120,255,180,.05) 1px, transparent 1px);
+      background-size: 38px 38px;
+    }
 
-    .container {
+    .shell {
       width: 100%;
-      max-width: 410px;
+      max-width: 620px;
+      position: relative;
     }
 
     .brand {
-      text-align: center;
-      margin-bottom: 22px;
-    }
-
-    .logo {
-      width: 58px;
-      height: 58px;
-      margin: 0 auto 14px;
       display: flex;
-      align-items: center;
       justify-content: center;
-      border-radius: 18px;
-      background: #183c27;
-      border: 1px solid #2d6842;
+      align-items: center;
+      gap: 11px;
+      margin-bottom: 18px;
       color: var(--green);
-      font-size: 29px;
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: .22em;
     }
 
-    .brand h1 {
-      margin: 0;
-      font-size: 25px;
-      letter-spacing: 1px;
-    }
-
-    .brand p {
-      color: var(--muted);
-      margin: 9px 0 0;
-      font-size: 14px;
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(80,245,155,.55);
+      border-radius: 10px;
+      background: rgba(80,245,155,.1);
+      font-size: 16px;
     }
 
     .card {
-      padding: 24px;
-      background: rgba(19, 26, 22, 0.97);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: 0 20px 60px #0004;
+      padding: clamp(22px, 5vw, 38px);
+      border: 1px solid rgba(111,255,174,.17);
+      border-radius: 25px;
+      background: linear-gradient(150deg, #0f2219, #07130e);
+      box-shadow: 0 24px 80px rgba(0,0,0,.38);
     }
 
-    .status-label {
-      display: flex;
+    .eyebrow {
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 1px;
-      margin-bottom: 20px;
+      padding: 7px 11px;
+      border: 1px solid rgba(80,245,155,.2);
+      border-radius: 999px;
+      background: rgba(80,245,155,.07);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .1em;
     }
 
-    .dot {
-      width: 8px;
-      height: 8px;
+    .pulse {
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: var(--green);
-      box-shadow: 0 0 10px #40e87966;
+      box-shadow: 0 0 12px var(--green);
     }
 
-    h2 {
-      margin: 0 0 10px;
-      font-size: 21px;
+    h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(30px, 6vw, 43px);
+      line-height: 1.08;
+      letter-spacing: -.045em;
     }
 
-    .description {
+    h1 span {
+      color: var(--green);
+    }
+
+    .intro {
+      margin: 0;
       color: var(--muted);
       font-size: 14px;
-      line-height: 1.7;
-      margin: 0 0 22px;
+      line-height: 1.75;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin: 25px 0;
+    }
+
+    .step {
+      min-width: 0;
+      padding: 12px 10px;
+      border: 1px solid rgba(157,197,174,.12);
+      border-radius: 13px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .step-number {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .12em;
+    }
+
+    .step-label {
+      font-size: 12px;
+      color: #d4e9dc;
+      font-weight: 700;
+    }
+
+    .actions {
+      display: grid;
+      gap: 11px;
     }
 
     .button {
       width: 100%;
-      min-height: 47px;
-      padding: 13px 16px;
-      border: 0;
-      border-radius: 10px;
-      font-weight: 700;
+      min-height: 49px;
+      padding: 13px 17px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border: 1px solid transparent;
+      border-radius: 13px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 850;
       cursor: pointer;
-      transition: 0.2s;
+      transition: transform .18s ease, filter .18s ease;
+    }
+
+    .button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+    }
+
+    .button:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 3px;
     }
 
     .button:disabled {
-      cursor: wait;
-      opacity: 0.55;
+      opacity: .55;
+      cursor: not-allowed;
     }
 
     .button-primary {
-      background: var(--green);
-      color: #07150c;
-    }
-
-    .button-primary:hover:not(:disabled) {
-      background: #65f393;
-      transform: translateY(-1px);
+      color: #052012;
+      background: linear-gradient(135deg, #74ffb2, #35d984);
+      box-shadow: 0 8px 25px rgba(43,213,126,.12);
     }
 
     .button-secondary {
-      background: #202c24;
-      color: var(--text);
-      border: 1px solid #35473a;
-      margin-top: 10px;
+      color: #eafff2;
+      background: rgba(255,255,255,.035);
+      border-color: rgba(145,191,163,.2);
     }
 
-    .button-secondary:hover:not(:disabled) {
-      border-color: var(--green);
-    }
-
-    .message {
-      min-height: 20px;
-      margin: 13px 0 0;
+    .status {
+      display: none;
+      margin-top: 16px;
+      padding: 12px 14px;
+      border: 1px solid rgba(145,191,163,.16);
+      border-radius: 12px;
+      color: #c5d9cd;
+      background: rgba(255,255,255,.025);
       font-size: 13px;
-      line-height: 1.6;
-      color: var(--muted);
+      line-height: 1.55;
       overflow-wrap: anywhere;
     }
 
-    .message.error { color: var(--danger); }
-    .message.success { color: var(--green); }
+    .status.show {
+      display: block;
+    }
+
+    .status.success {
+      color: var(--success);
+      border-color: rgba(112,255,174,.25);
+    }
+
+    .status.error {
+      color: var(--danger);
+      border-color: rgba(255,129,129,.3);
+    }
 
     .result {
       margin-top: 22px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
+      padding-top: 22px;
+      border-top: 1px solid rgba(145,191,163,.14);
     }
 
-    .result[hidden] { display: none; }
-
     .result-title {
-      font-size: 13px;
-      color: var(--muted);
       margin-bottom: 10px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .14em;
     }
 
     .key-box {
       width: 100%;
-      padding: 14px 10px;
-      background: #080d09;
-      color: var(--green);
-      border: 1px solid #304b38;
-      border-radius: 9px;
+      min-height: 50px;
+      margin-bottom: 11px;
+      padding: 13px 14px;
+      border: 1px dashed rgba(80,245,155,.38);
+      border-radius: 12px;
+      outline: none;
+      background: rgba(0,0,0,.22);
+      color: #f4fff8;
+      font: 750 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       text-align: center;
-      font-size: 13px;
-      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .content-panel {
+      margin-top: 19px;
+      padding: 16px;
+      border: 1px solid rgba(145,191,163,.15);
+      border-radius: 14px;
+      background: rgba(0,0,0,.15);
+    }
+
+    .content-panel h2 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .content-text {
+      color: #d0e3d7;
+      font-size: 14px;
+      line-height: 1.8;
+      white-space: pre-wrap;
       overflow-wrap: anywhere;
     }
 
     .notice {
       margin-top: 20px;
-      padding: 12px;
-      background: #101711;
-      border: 1px solid #25362a;
-      border-radius: 10px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      background: rgba(80,245,155,.045);
       color: var(--muted);
       font-size: 12px;
       line-height: 1.7;
     }
 
-    footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 12px;
-      color: #68766c;
+    .notice strong {
+      color: #d9f8e5;
     }
 
-    @media (max-width: 380px) {
-      .card { padding: 19px; }
-      .brand h1 { font-size: 22px; }
+    footer {
+      padding: 18px 8px 0;
+      color: #648071;
+      font-size: 11px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 420px) {
+      body {
+        padding: 18px 12px;
+      }
+
+      .steps {
+        gap: 6px;
+      }
+
+      .step {
+        padding: 10px 7px;
+      }
+
+      .step-label {
+        font-size: 11px;
+      }
+
+      .card {
+        border-radius: 20px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        transition: none !important;
+      }
     }
   </style>
 </head>
 
 <body>
-  <main class="container">
-    <header class="brand">
-      <div class="logo" aria-hidden="true">⌘</div>
-      <h1>KEY CENTER</h1>
-      <p>Hệ thống cấp key tự động</p>
-    </header>
+  <main class="shell">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">⌘</div>
+      <span>KEY CENTER</span>
+    </div>
 
     <section class="card">
-      <div class="status-label">
-        <span class="dot"></span>
-        KEY SYSTEM
+      <div class="eyebrow">
+        <span class="pulse"></span>
+        HỆ THỐNG CẤP KEY
       </div>
 
-      <h2>Nhận key của bạn</h2>
+      <h1>Mở khóa <span>nội dung</span></h1>
 
-      <p class="description">
-        Nhấn Lấy Key để tiếp tục đến Link4M.
-        Sau khi quay lại website, bạn có thể yêu cầu cấp key.
+      <p class="intro">
+        Làm theo từng bước để nhận key và xem nội dung hiện tại.
+        Khi hoàn thành, nhấn nút bên dưới để máy chủ xác nhận key
+        và cấp nội dung tiếp theo.
       </p>
 
-      <button class="button button-primary" id="getLinkButton" type="button">
-        Lấy Key
-      </button>
+      <div class="steps" aria-label="Quy trình nhận key">
+        <div class="step">
+          <span class="step-number">BƯỚC 01</span>
+          <span class="step-label">Lấy liên kết</span>
+        </div>
 
-      <button
-        class="button button-primary"
-        id="receiveButton"
-        type="button"
-        hidden
-        style="margin-top: 10px"
-      >
-        Nhận Key
-      </button>
+        <div class="step">
+          <span class="step-number">BƯỚC 02</span>
+          <span class="step-label">Nhận key</span>
+        </div>
 
-      <p class="message" id="statusMessage" role="status" aria-live="polite"></p>
+        <div class="step">
+          <span class="step-number">BƯỚC 03</span>
+          <span class="step-label">Hoàn thành</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="button button-primary" id="getLinkButton" type="button">
+          <span aria-hidden="true">↗</span>
+          Lấy liên kết nhận Key
+        </button>
+
+        <button class="button button-secondary" id="receiveButton" type="button" hidden>
+          Nhận Key &amp; Nội dung
+        </button>
+      </div>
+
+      <div class="status" id="statusMessage" role="status" aria-live="polite"></div>
 
       <div class="result" id="keyResult" hidden>
         <div class="result-title">KEY CỦA BẠN</div>
@@ -263,75 +410,90 @@
           Sao chép Key
         </button>
 
+        <div class="content-panel">
+          <div class="result-title">NỘI DUNG HIỆN TẠI</div>
+          <h2 id="contentTitle">Nội dung của bạn</h2>
+          <div class="content-text" id="contentOutput">
+            Nội dung sẽ hiển thị ở đây.
+          </div>
+        </div>
+
         <button
           class="button button-primary"
-          id="confirmButton"
+          id="completeButton"
           type="button"
-          style="margin-top: 10px"
+          style="margin-top: 15px"
         >
-          Xác nhận &amp; Tiếp tục →
+          Hoàn thành &amp; Nhận Key Tiếp Theo →
         </button>
       </div>
 
       <div class="notice">
-        <strong>Hướng dẫn:</strong><br>
-        1. Nhấn Lấy Key để mở Link4M.<br>
-        2. Quay lại website sau khi hoàn tất bước của bạn.<br>
-        3. Nhấn Nhận Key để yêu cầu cấp key.<br>
-        4. Sao chép key và nhấn Xác nhận để tiếp tục.
+        <strong>Lưu ý:</strong>
+        Sau khi hoàn thành nội dung hiện tại, nhấn
+        <strong>“Hoàn thành &amp; Nhận Key Tiếp Theo”</strong>
+        để xác nhận key và chuyển sang nội dung kế tiếp.
+        Không chia sẻ key nếu bạn muốn giữ riêng cho mình.
       </div>
     </section>
 
-    <footer>KEY CENTER · Powered by Supabase</footer>
+    <footer>
+      KEY CENTER · Hệ thống cấp key theo từng nội dung
+    </footer>
   </main>
 
   <script>
-    // ===== CẤU HÌNH =====
+    "use strict";
 
+    // Supabase URL và anon public key.
+    // KHÔNG đặt service_role key hoặc token Link4M trong HTML công khai.
     const SUPABASE_URL =
       "https://wxygtmfttyidwnhjdwdw.supabase.co";
 
-    // Đây là anon public key bạn đã dùng trong file cũ.
-    // Không thay bằng service_role hoặc secret key.
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4eWd0bWZ0dHlpZHduaGpkd2R3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2NDU2ODgsImV4cCI6MjEwNzIyMTY4OH0.d0XLGnIxohNg4DzmzCmqNZuIDMijKJFta4s8n48CSHE";
 
-    // THAY bằng URL website chính thực tế của bạn.
-    const MAIN_WEBSITE_URL = "https://example.com/";
-
-    // ===== PHẦN XỬ LÝ =====
-
     const getLinkButton = document.getElementById("getLinkButton");
     const receiveButton = document.getElementById("receiveButton");
-    const copyButton = document.getElementById("copyButton");
-    const confirmButton = document.getElementById("confirmButton");
     const statusMessage = document.getElementById("statusMessage");
     const keyResult = document.getElementById("keyResult");
     const keyOutput = document.getElementById("keyOutput");
+    const contentTitle = document.getElementById("contentTitle");
+    const contentOutput = document.getElementById("contentOutput");
+    const copyButton = document.getElementById("copyButton");
+    const completeButton = document.getElementById("completeButton");
 
     let currentKey = "";
 
     function setMessage(message, type = "") {
       statusMessage.textContent = message;
-      statusMessage.className = "message " + type;
+      statusMessage.className = "status show" + (type ? " " + type : "");
     }
 
+    // Mỗi trình duyệt có một clientId ổn định để máy chủ tìm tiến trình hiện tại.
     function getClientId() {
       const storageKey = "key_center_client_id_v1";
       let clientId = localStorage.getItem(storageKey);
 
       if (!clientId) {
-        if (!crypto.randomUUID) {
-          throw new Error("Trình duyệt không hỗ trợ tạo mã người dùng.");
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+          clientId = window.crypto.randomUUID();
+        } else {
+          clientId =
+            "client-" +
+            Date.now().toString(36) +
+            "-" +
+            Math.random().toString(36).slice(2) +
+            Math.random().toString(36).slice(2);
         }
 
-        clientId = crypto.randomUUID();
         localStorage.setItem(storageKey, clientId);
       }
 
       return clientId;
     }
 
+    // Gọi Supabase Edge Function.
     async function callFunction(name, body = {}) {
       const response = await fetch(
         `${SUPABASE_URL}/functions/v1/${name}`,
@@ -346,153 +508,274 @@
         }
       );
 
-      const raw = await response.text();
       let data;
 
       try {
-        data = JSON.parse(raw);
+        data = await response.json();
       } catch {
-        throw new Error(`Phản hồi máy chủ không hợp lệ (HTTP ${response.status}).`);
+        throw new Error("Máy chủ trả về dữ liệu không hợp lệ.");
       }
 
-      if (!response.ok || data.success !== true) {
+      if (!response.ok || !data || data.success !== true) {
         throw new Error(
-          data.message || data.error || `Lỗi HTTP ${response.status}`
+          data?.error ||
+          data?.message ||
+          `Yêu cầu thất bại (HTTP ${response.status}).`
         );
       }
 
       return data;
     }
 
-    // Nhận biết người dùng quay lại từ Link4M.
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.get("from") === "link4m") {
+    function showReturnedState() {
       receiveButton.hidden = false;
-      getLinkButton.textContent = "Tạo lại Link4M";
-      setMessage(
-        "Bạn đã quay lại website. Nhấn Nhận Key để tiếp tục.",
-        "success"
-      );
+      getLinkButton.textContent = "Lấy lại liên kết nhận Key";
 
-      // Xóa tham số khỏi thanh địa chỉ sau khi nhận biết.
-      window.history.replaceState(
-        {},
-        document.title,
-        window.location.pathname + window.location.hash
+      setMessage(
+        "Bạn đã quay lại KEY CENTER. Nhấn “Nhận Key & Nội dung” để tiếp tục.",
+        "success"
       );
     }
 
-    // Bước 1: gọi create-link4m.
+    // Kiểm tra có quay lại từ Link4M hay không.
+    const currentUrl = new URL(window.location.href);
+    const returnedFromLink4m =
+      currentUrl.searchParams.get("from") === "link4m";
+
+    if (returnedFromLink4m) {
+      showReturnedState();
+
+      // Xóa tham số khỏi thanh địa chỉ sau khi đã nhận diện.
+      currentUrl.searchParams.delete("from");
+
+      const cleanUrl =
+        currentUrl.pathname +
+        currentUrl.search +
+        currentUrl.hash;
+
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+
+    // BƯỚC 1: Yêu cầu máy chủ tạo link Link4M.
     getLinkButton.addEventListener("click", async () => {
       getLinkButton.disabled = true;
-      setMessage("Đang tạo liên kết Link4M...");
+
+      const oldText = getLinkButton.textContent;
+      getLinkButton.textContent = "Đang tạo liên kết...";
+
+      setMessage("Đang kết nối với máy chủ để tạo liên kết nhận key.");
 
       try {
-        const data = await callFunction("create-link4m");
+        const data = await callFunction("create-link4m", {
+          clientId: getClientId()
+        });
 
-        if (!data.shortenedUrl) {
-          throw new Error("Máy chủ không trả về link Link4M.");
+        const shortenedUrl = data.shortenedUrl;
+
+        if (!shortenedUrl) {
+          throw new Error("Máy chủ chưa trả về liên kết rút gọn.");
         }
 
-        const link = new URL(data.shortenedUrl);
+        const parsedUrl = new URL(shortenedUrl);
 
-        if (
-          link.protocol !== "https:" ||
-          !["link4m.com", "link4m.co", "link4m.net"].includes(link.hostname)
-        ) {
-          throw new Error("Tên miền Link4M không hợp lệ.");
+        const allowedHosts = [
+          "link4m.com",
+          "link4m.co",
+          "link4m.net"
+        ];
+
+        const allowed =
+          parsedUrl.protocol === "https:" &&
+          allowedHosts.some(
+            host =>
+              parsedUrl.hostname === host ||
+              parsedUrl.hostname.endsWith("." + host)
+          );
+
+        if (!allowed) {
+          throw new Error(
+            "Liên kết trả về không thuộc tên miền Link4M được cho phép."
+          );
         }
 
-        window.location.assign(link.href);
+        window.location.assign(parsedUrl.href);
       } catch (error) {
         console.error("create-link4m error:", error);
-        setMessage("Không tạo được link: " + error.message, "error");
+
+        setMessage(
+          "Không tạo được liên kết: " + error.message,
+          "error"
+        );
+
         getLinkButton.disabled = false;
+        getLinkButton.textContent = oldText;
       }
     });
 
-    // Bước 2: yêu cầu cấp key từ get-key.
-    // Function get-key cần được Deploy riêng trên Supabase.
+    // BƯỚC 2: Nhận key và nội dung hiện tại từ máy chủ.
     receiveButton.addEventListener("click", async () => {
       receiveButton.disabled = true;
-      keyResult.hidden = true;
-      currentKey = "";
-      setMessage("Đang yêu cầu cấp key...");
+      receiveButton.textContent = "Đang nhận key...";
+
+      setMessage("Đang lấy key và nội dung hiện tại từ máy chủ.");
 
       try {
         const data = await callFunction("get-key", {
           clientId: getClientId()
         });
 
-        if (typeof data.key !== "string" || !data.key) {
-          throw new Error("Máy chủ chưa trả về key hợp lệ.");
+        if (!data.key) {
+          throw new Error("Máy chủ chưa cấp key.");
         }
 
         currentKey = data.key;
         keyOutput.value = currentKey;
+
+        contentTitle.textContent =
+          data.title || "Nội dung của bạn";
+
+        contentOutput.textContent =
+          data.content || "Chưa có nội dung.";
+
+        completeButton.disabled = false;
+        completeButton.textContent =
+          "Hoàn thành & Nhận Key Tiếp Theo →";
+
         keyResult.hidden = false;
 
         setMessage(
-          data.reused
-            ? "Đã tìm thấy key đã cấp trước đó."
-            : "Đã nhận key thành công!",
+          "Đã nhận key. Bạn có thể sao chép key và xem nội dung bên dưới.",
           "success"
         );
       } catch (error) {
         console.error("get-key error:", error);
-        setMessage("Không nhận được key: " + error.message, "error");
+
+        setMessage(
+          "Không nhận được key: " + error.message,
+          "error"
+        );
       } finally {
         receiveButton.disabled = false;
+        receiveButton.textContent = "Nhận Key & Nội dung";
       }
     });
 
     // Sao chép key.
     copyButton.addEventListener("click", async () => {
-      if (!currentKey) return;
+      if (!currentKey) {
+        setMessage("Chưa có key để sao chép.", "error");
+        return;
+      }
 
       try {
-        await navigator.clipboard.writeText(currentKey);
-        setMessage("Đã sao chép key!", "success");
-      } catch {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(currentKey);
+        } else {
+          keyOutput.focus();
+          keyOutput.select();
+
+          const copied = document.execCommand("copy");
+
+          if (!copied) {
+            throw new Error(
+              "Trình duyệt không cho phép sao chép tự động."
+            );
+          }
+        }
+
+        setMessage("Đã sao chép key vào clipboard.", "success");
+      } catch (error) {
+        console.error("copy key error:", error);
+
         keyOutput.focus();
         keyOutput.select();
 
-        const copied = document.execCommand("copy");
-
         setMessage(
-          copied
-            ? "Đã sao chép key!"
-            : "Hãy chọn key rồi nhấn Ctrl+C.",
-          copied ? "success" : ""
+          "Không sao chép tự động được. Key đã được chọn; hãy nhấn Ctrl+C.",
+          "error"
         );
       }
     });
 
-    // Bước 3: chuyển đến website chính.
-    // Chưa xác thực key ở máy chủ; cần bổ sung verify-key để bảo vệ nội dung.
-    confirmButton.addEventListener("click", () => {
+    // BƯỚC 3: Gửi key hiện tại lên máy chủ để xác nhận và chuyển nội dung.
+    completeButton.addEventListener("click", async () => {
       if (!currentKey) {
         setMessage("Bạn cần nhận key trước.", "error");
         return;
       }
 
+      completeButton.disabled = true;
+      completeButton.textContent = "Đang chuyển nội dung...";
+
+      setMessage(
+        "Đang xác nhận key và yêu cầu cấp nội dung tiếp theo."
+      );
+
       try {
-        const destination = new URL(MAIN_WEBSITE_URL);
+        const data = await callFunction("complete-content", {
+          clientId: getClientId(),
+          key: currentKey
+        });
 
-        if (destination.protocol !== "https:") {
-          throw new Error("Website chính phải dùng HTTPS.");
+        // Nếu đã hết nội dung.
+        if (data.completedAll) {
+          currentKey = "";
+          keyOutput.value = "";
+
+          contentTitle.textContent = "Đã hoàn thành tất cả";
+
+          contentOutput.textContent =
+            data.message ||
+            "Bạn đã hoàn thành toàn bộ nội dung hiện có.";
+
+          completeButton.disabled = true;
+          completeButton.textContent = "Đã hoàn thành";
+
+          setMessage(
+            "Bạn đã hoàn thành toàn bộ nội dung!",
+            "success"
+          );
+
+          return;
         }
 
-        if (destination.hostname === "example.com") {
-          throw new Error("Bạn chưa thay URL website chính trong code.");
+        if (!data.key) {
+          throw new Error("Máy chủ chưa cấp key tiếp theo.");
         }
 
-        window.location.assign(destination.href);
+        // Cập nhật key và nội dung mới được máy chủ trả về.
+        currentKey = data.key;
+        keyOutput.value = data.key;
+
+        contentTitle.textContent =
+          data.title || "Nội dung tiếp theo";
+
+        contentOutput.textContent =
+          data.content || "Chưa có nội dung.";
+
+        setMessage(
+          "Hoàn thành! Key mới và nội dung tiếp theo đã được cấp.",
+          "success"
+        );
+
+        completeButton.textContent =
+          "Hoàn thành & Nhận Key Tiếp Theo →";
       } catch (error) {
-        setMessage(error.message || "URL website chính không hợp lệ.", "error");
+        console.error("complete-content error:", error);
+
+        setMessage(
+          "Không thể chuyển nội dung: " + error.message,
+          "error"
+        );
+
+        completeButton.textContent = "Thử hoàn thành lại";
+      } finally {
+        if (currentKey) {
+          completeButton.disabled = false;
+        }
       }
     });
   </script>
 </body>
 </html>
+```
