@@ -495,5 +495,119 @@
       }
     });
   </script>
+  
+const SUPABASE_URL =
+  "https://wxygtmfttyidwnhjdwdw.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "DAN_ANON_PUBLIC_KEY_CUA_BAN_VAO_DAY";
+
+const statusEl = document.getElementById("status");
+const getLinkBtn = document.getElementById("getLinkBtn");
+const receiveBtn = document.getElementById("receiveBtn");
+const resultEl = document.getElementById("result");
+const contentText = document.getElementById("contentText");
+const copyBtn = document.getElementById("copyBtn");
+
+// Giữ cùng mã người dùng khi họ quay lại trang.
+function getClientId() {
+  let id = localStorage.getItem("content_client_id");
+
+  if (!id) {
+    id = "client_" + crypto.randomUUID().replaceAll("-", "");
+    localStorage.setItem("content_client_id", id);
+  }
+
+  return id;
+}
+
+// Gọi Edge Function của Supabase.
+async function callFunction(name, body = {}) {
+  const response = await fetch(
+    `${SUPABASE_URL}/functions/v1/${name}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify(body),
+    },
+  );
+
+  const raw = await response.text();
+  let data;
+
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    throw new Error(`Supabase trả về phản hồi không hợp lệ (${response.status}).`);
+  }
+
+  if (!response.ok || !data.success) {
+    throw new Error(
+      data.message || data.error || `Lỗi HTTP ${response.status}`,
+    );
+  }
+
+  return data;
+}
+
+// Nếu người dùng quay lại từ Link4M, hiện nút nhận nội dung.
+if (new URLSearchParams(location.search).get("from") === "link4m") {
+  receiveBtn.hidden = false;
+  statusEl.textContent =
+    "Bạn đã quay lại website. Nhấn Nhận nội dung để tiếp tục.";
+}
+
+// Bước 1: tạo link Link4M rồi chuyển người dùng sang link đó.
+getLinkBtn.addEventListener("click", async () => {
+  getLinkBtn.disabled = true;
+  statusEl.textContent = "Đang tạo liên kết Link4M...";
+
+  try {
+    const data = await callFunction("create-link4m");
+    location.href = data.shortenedUrl;
+  } catch (error) {
+    statusEl.textContent = "Không tạo được link: " + error.message;
+    getLinkBtn.disabled = false;
+  }
+});
+
+// Bước 2: cấp nội dung chưa được dùng từ kho Supabase.
+receiveBtn.addEventListener("click", async () => {
+  receiveBtn.disabled = true;
+  statusEl.textContent = "Đang lấy nội dung...";
+  resultEl.hidden = true;
+
+  try {
+    const data = await callFunction("get-key", {
+      clientId: getClientId(),
+    });
+
+    contentText.textContent = data.content || data.key;
+    resultEl.hidden = false;
+    statusEl.textContent = data.reused
+      ? "Đây là nội dung đã được cấp cho mã trình duyệt này."
+      : "Đã cấp nội dung riêng thành công!";
+  } catch (error) {
+    statusEl.textContent = "Không lấy được nội dung: " + error.message;
+  } finally {
+    receiveBtn.disabled = false;
+  }
+});
+
+// Sao chép nội dung.
+copyBtn.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(contentText.textContent);
+    statusEl.textContent = "Đã sao chép nội dung!";
+  } catch {
+    statusEl.textContent =
+      "Không sao chép tự động được. Hãy chọn và sao chép nội dung thủ công.";
+  }
+});
+
 </body>
 </html>
