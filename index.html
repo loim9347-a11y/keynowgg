@@ -326,5 +326,157 @@
 
     handleLink4MReturn();
   </script>
+<style>
+  #access-lock {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(3, 8, 5, 0.97);
+    backdrop-filter: blur(15px);
+    font-family: Arial, sans-serif;
+    color: #f2fff6;
+  }
+
+  #access-lock .lock-card {
+    width: 100%;
+    max-width: 390px;
+    padding: 28px 24px;
+    border: 1px solid #294333;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #14251a, #090e0b);
+    box-shadow: 0 20px 70px #0009;
+    text-align: center;
+  }
+
+  #access-lock .lock-icon {
+    width: 65px;
+    height: 65px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+    border: 1px solid #39f58a80;
+    border-radius: 18px;
+    background: #39f58a12;
+    color: #39f58a;
+    font-size: 30px;
+  }
+
+  #access-lock h2 {
+    margin: 0;
+    font-size: 25px;
+    letter-spacing: 2px;
+  }
+
+  #access-lock h2 span { color: #39f58a; }
+
+  #access-lock .lock-desc {
+    margin: 12px 0 24px;
+    color: #91a096;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  #access-lock input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    margin-bottom: 12px;
+    border: 1px solid #28392f;
+    border-radius: 10px;
+    background: #080d0b;
+    color: #fff;
+    outline: none;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  #access-lock input:focus {
+    border-color: #39f58a;
+  }
+
+  #access-lock button {
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: 10px;
+    background: #39f58a;
+    color: #06120a;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  #access-lock .lock-error {
+    min-height: 18px;
+    margin-top: 13px;
+    color: #ff9999;
+    font-size: 13px;
+  }
+
+  #access-lock .lock-footer {
+    margin-top: 22px;
+    color: #68766c;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+</style>
+
+<div id="access-lock" role="dialog"
+     aria-modal="true" aria-labelledby="lock-title">
+  <div class="lock-card">
+    <div class="lock-icon">🔒</div>
+    <h2 id="lock-title">KEY <span>ACCESS</span></h2>
+    <p class="lock-desc">
+      Website đã được khóa.<br>
+      Nhập key lấy ở ugphone mod để tiếp tục
+    </p>
+
+    <form id="access-form">
+      <input
+        id="access-key-input"
+        type="password"
+        placeholder="Nhập key truy cập..."
+        autocomplete="off"
+        required
+      >
+      <button type="submit">XÁC NHẬN KEY</button>
+    </form>
+
+    <div id="access-error" class="lock-error"
+         role="status" aria-live="polite"></div>
+
+    <div class="lock-footer">SECURE ACCESS SYSTEM</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ===== CHỈNH KEY CỦA BẠN Ở ĐÂY =====
+  const ACCESS_KEY = "KHOI-2026";
+  // ==================================
+
+  const overlay = document.getElementById("access-lock");
+  const form = document.getElementById("access-form");
+  const input = document.getElementById("access-key-input");
+  const error = document.getElementById("access-error");
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    if (input.value.trim() === ACCESS_KEY) {
+      overlay.remove();
+    } else {
+      error.textContent = "Key không chính xác. Vui lòng thử lại.";
+      input.value = "";
+      input.focus();
+    }
+  });
+})();
+</script>
 </body>
 </html>
