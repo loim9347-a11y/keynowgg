@@ -330,59 +330,153 @@
     // Run once, after all UI elements and handlers have been initialized.
     handleLink4MReturn();
   </script>
-  <div id="access-lock" role="dialog"
-     aria-modal="true" aria-labelledby="lock-title">
-  <div class="lock-card">
-    <div class="lock-icon">🔒</div>
-    <h2 id="lock-title">KEY <span>ACCESS</span></h2>
-    <p class="lock-desc">
-      Website đã được khóa.<br>
-      Nhập key lấy ở ugphone mod để tiếp tục
+
+  <style>
+  #keyLock {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(3, 8, 5, 0.97);
+    backdrop-filter: blur(15px);
+    font-family: Arial, sans-serif;
+    color: #f2fff6;
+  }
+
+  #keyLock .key-card {
+    width: 100%;
+    max-width: 390px;
+    padding: 28px 24px;
+    border: 1px solid #294333;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #14251a, #090e0b);
+    box-shadow: 0 20px 70px #0009;
+    text-align: center;
+  }
+
+  #keyLock .key-logo {
+    width: 65px;
+    height: 65px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+    border: 1px solid #39f58a80;
+    border-radius: 18px;
+    background: #39f58a12;
+    color: #39f58a;
+    font-size: 30px;
+    font-weight: 900;
+  }
+
+  #keyLock h2 {
+    margin: 0;
+    font-size: 25px;
+    letter-spacing: 2px;
+  }
+
+  #keyLock h2 span {
+    color: #39f58a;
+  }
+
+  #keyLock .key-desc {
+    margin: 12px 0 24px;
+    color: #91a096;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  #keyLock input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    margin-bottom: 12px;
+    border: 1px solid #28392f;
+    border-radius: 10px;
+    background: #080d0b;
+    color: #fff;
+    outline: none;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  #keyLock input:focus {
+    border-color: #39f58a;
+  }
+
+  #keyLock button {
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: 10px;
+    background: #39f58a;
+    color: #06120a;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  #keyLock .key-error {
+    min-height: 18px;
+    margin-top: 13px;
+    color: #ff9999;
+    font-size: 13px;
+  }
+
+  #keyLock .key-footer {
+    margin-top: 22px;
+    color: #68766c;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+</style>
+
+<div id="keyLock">
+  <div class="key-card">
+    <div class="key-logo">K</div>
+
+    <h2>KEY <span>CENTER</span></h2>
+
+    <p class="key-desc">
+      Vui lòng nhập key để mở khóa và sử dụng website.
     </p>
 
-    <form id="access-form">
+    <form id="keyLockForm">
       <input
-        id="access-key-input"
+        id="accessKey"
         type="password"
-        placeholder="Nhập key truy cập..."
+        placeholder="Nhập key mở khóa..."
         autocomplete="off"
         required
       >
+
       <button type="submit">XÁC NHẬN KEY</button>
+      <div id="keyError" class="key-error" role="status"></div>
     </form>
 
-    <div id="access-error" class="lock-error"
-         role="status" aria-live="polite"></div>
-
-    <div class="lock-footer">SECURE ACCESS SYSTEM</div>
+    <div class="key-footer">KEY CENTER</div>
   </div>
 </div>
 
 <script>
-(() => {
-  "use strict";
-
-  // ===== CHỈNH KEY CỦA BẠN Ở ĐÂY =====
-  const ACCESS_KEY = "Toro_vaizomlesaunu";
-  // ==================================
-
-  const overlay = document.getElementById("access-lock");
-  const form = document.getElementById("access-form");
-  const input = document.getElementById("access-key-input");
-  const error = document.getElementById("access-error");
+(function () {
+  const MY_SECRET_KEY = "Toro_vaizomlesaunu";
+  const lock = document.getElementById("keyLock");
+  const form = document.getElementById("keyLockForm");
+  const input = document.getElementById("accessKey");
+  const error = document.getElementById("keyError");
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    if (input.value.trim() === ACCESS_KEY) {
-      overlay.remove();
+    if (input.value.trim() === MY_SECRET_KEY) {
+      lock.remove();
     } else {
-      error.textContent = "Key không chính xác. Vui lòng thử lại.";
+      error.textContent = "Key không chính xác. Vui lòng thử lại!";
       input.value = "";
       input.focus();
     }
   });
 })();
 </script>
-</body>
-</html>
