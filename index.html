@@ -287,42 +287,87 @@
       }
     });
 
-    async function handleLink4MReturn() {
-      const url = new URL(window.location.href);
-      if (url.searchParams.get("link4m_return") !== "1") return;
+    
+async function handleLink4MReturn() {
+  const url = new URL(window.location.href);
 
-      const returnedClientId = url.searchParams.get("client_id");
-      const returnedAttemptId = url.searchParams.get("attempt_id");
-      const expectedClientId = sessionStorage.getItem("key_center_pending_client_v1");
-      const expectedAttemptId = sessionStorage.getItem("key_center_pending_attempt_v1");
+  // Chỉ xử lý khi URL có dấu hiệu quay về từ Link4M.
+  if (url.searchParams.get("link4m_return") !== "1") {
+    return;
+  }
 
-      // Xóa các tham số khỏi thanh địa chỉ dù lượt quay lại hợp lệ hay không.
-      url.searchParams.delete("link4m_return");
-      url.searchParams.delete("client_id");
-      url.searchParams.delete("attempt_id");
-      window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+  const returnedClientId = url.searchParams.get("client_id");
+  const returnedAttemptId = url.searchParams.get("attempt_id");
 
-      if (
-        !returnedClientId || !returnedAttemptId ||
-        returnedClientId !== expectedClientId ||
-        returnedClientId !== getClientId() ||
-        returnedAttemptId !== expectedAttemptId
-      ) {
-        showStatus("getStatus", "Không tìm thấy lượt lấy key khớp với phiên này. Hãy nhấn LẤY KEY NGAY để tạo lượt mới.", "error");
-        return;
-      }
+  const expectedClientId = sessionStorage.getItem(
+    "key_center_pending_client_v1"
+  );
 
-      sessionStorage.removeItem("key_center_pending_client_v1");
-      sessionStorage.removeItem("key_center_pending_attempt_v1");
+  const expectedAttemptId = sessionStorage.getItem(
+    "key_center_pending_attempt_v1"
+  );
 
-      try {
-        showStatus("getStatus", "Đang lấy lượt nhận của bạn...", "info");
-        const data = await callFunction("get-key", { clientId: getClientId() });
-        prepareAssignment(data);
-      } catch (error) {
-        showStatus("getStatus", error.message || "Không thể lấy key. Có thể bạn đã mở nội dung hoặc đã hết nội dung khả dụng.", "error");
-      }
-    }
+  // Giữ nguyên các tham số trên thanh địa chỉ trong lúc kiểm tra.
+  console.log("Link4M return check:", {
+    hasReturnFlag: url.searchParams.get("link4m_return") === "1",
+    hasClientId: Boolean(returnedClientId),
+    hasAttemptId: Boolean(returnedAttemptId),
+    hasExpectedClientId: Boolean(expectedClientId),
+    hasExpectedAttemptId: Boolean(expectedAttemptId),
+    clientMatches:
+      Boolean(returnedClientId) &&
+      returnedClientId === expectedClientId &&
+      returnedClientId === getClientId(),
+    attemptMatches:
+      Boolean(returnedAttemptId) &&
+      returnedAttemptId === expectedAttemptId
+  });
+
+  // Kiểm tra phiên trước khi nhận key.
+  if (
+    !returnedClientId ||
+    !returnedAttemptId ||
+    returnedClientId !== expectedClientId ||
+    returnedClientId !== getClientId() ||
+    returnedAttemptId !== expectedAttemptId
+  ) {
+    showStatus(
+      "getStatus",
+      "Không tìm thấy lượt lấy key khớp với phiên này. Hãy nhấn LẤY KEY NGAY để tạo lượt mới.",
+      "error"
+    );
+    return;
+  }
+
+  // Chỉ xóa phiên đang chờ sau khi xác minh thành công.
+  sessionStorage.removeItem("key_center_pending_client_v1");
+  sessionStorage.removeItem("key_center_pending_attempt_v1");
+
+  try {
+    showStatus(
+      "getStatus",
+      "Đang lấy lượt nhận của bạn...",
+      "info"
+    );
+
+    const data = await callFunction("get-key", {
+      clientId: getClientId()
+    });
+
+    prepareAssignment(data);
+  } catch (error) {
+    showStatus(
+      "getStatus",
+      error && error.message
+        ? error.message
+        : "Không thể lấy key. Có thể bạn đã mở nội dung hoặc đã hết nội dung khả dụng.",
+      "error"
+    );
+  }
+}
+
+// Chạy xử lý khi trang tải.
+handleLink4MReturn();
 
     handleLink4MReturn();
   </script>
@@ -457,7 +502,7 @@
   "use strict";
 
   // ===== CHỈNH KEY CỦA BẠN Ở ĐÂY =====
-  const ACCESS_KEY = "Toro_ditmenaosaure";
+  const ACCESS_KEY = "Toro_vaizomlesaunu";
   // ==================================
 
   const overlay = document.getElementById("access-lock");
