@@ -323,10 +323,10 @@ async function startLink4M() {
     });
 
     
+
 async function handleLink4MReturn() {
   const url = new URL(window.location.href);
 
-  // Chỉ xử lý khi URL có dấu hiệu quay về từ Link4M.
   if (url.searchParams.get("link4m_return") !== "1") {
     return;
   }
@@ -334,14 +334,75 @@ async function handleLink4MReturn() {
   const returnedClientId = url.searchParams.get("client_id");
   const returnedAttemptId = url.searchParams.get("attempt_id");
 
-  const expectedClientId = sessionStorage.getItem(
-    "key_center_pending_client_v1"
-  );
+  let expectedClientId = null;
+  let expectedAttemptId = null;
+  let localClientId = null;
+  let storageError = false;
 
-  const expectedAttemptId = sessionStorage.getItem(
-    "key_center_pending_attempt_v1"
+  try {
+    expectedClientId = sessionStorage.getItem(
+      "key_center_pending_client_v1"
+    );
+    expectedAttemptId = sessionStorage.getItem(
+      "key_center_pending_attempt_v1"
+    );
+    localClientId = getClientId();
+  } catch (error) {
+    storageError = true;
+  }
 
-  );
+  const diagnostic = {
+    hasReturnFlag: true,
+    hasReturnedClientId: Boolean(returnedClientId),
+    hasReturnedAttemptId: Boolean(returnedAttemptId),
+    hasExpectedClientId: Boolean(expectedClientId),
+    hasExpectedAttemptId: Boolean(expectedAttemptId),
+    clientMatches: Boolean(returnedClientId) &&
+      returnedClientId === expectedClientId,
+    localClientMatches: Boolean(returnedClientId) &&
+      returnedClientId === localClientId,
+    attemptMatches: Boolean(returnedAttemptId) &&
+      returnedAttemptId === expectedAttemptId,
+    storageError
+  };
+
+  console.log("KEY CENTER RETURN DIAGNOSTIC:", diagnostic);
+
+  if (
+    storageError ||
+    !returnedClientId ||
+    !returnedAttemptId ||
+    returnedClientId !== expectedClientId ||
+    returnedClientId !== localClientId ||
+    returnedAttemptId !== expectedAttemptId
+  ) {
+    showStatus(
+      "getStatus",
+      "Phiên lấy key chưa khớp. Chưa gọi get-key và chưa tạo link mới. Hãy kiểm tra Console để xác định nguyên nhân.",
+      "error"
+    );
+    return;
+  }
+
+  sessionStorage.removeItem("key_center_pending_client_v1");
+  sessionStorage.removeItem("key_center_pending_attempt_v1");
+
+  try {
+    showStatus("getStatus", "Đang lấy lượt nhận của bạn...", "info");
+
+    const data = await callFunction("get-key", {
+      clientId: localClientId
+    });
+
+    prepareAssignment(data);
+  } catch (error) {
+    showStatus(
+      "getStatus",
+      error?.message || "Không thể lấy key.",
+      "error"
+    );
+  }
+}
   
   // Giữ nguyên các tham số trên thanh địa chỉ trong lúc kiểm tra.
   console.log("Link4M return check:", {
