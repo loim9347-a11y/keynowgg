@@ -57,7 +57,7 @@
         <button id="openContentButton" class="secondary-button" type="button" style="display:none">MỞ NỘI DUNG</button>
       </div>
       <div id="getStatus" class="status" role="status" aria-live="polite"></div>
-      <p class="small-note">Hãy xem hướng dẫn chi tiết trên kênh nếu muốn sử dụng dễ dàng</p>
+      <p class="small-note">Hãy xem hướng dẫn chi tiết trên kênh nếu muốn sử dụng dễ dàng.</p>
     </section>
 
     <section class="card">
@@ -85,22 +85,26 @@
     const FUNCTION_URL = SUPABASE_URL + "/functions/v1/";
     const $ = id => document.getElementById(id);
 
+    const CLIENT_ID_KEY = "key_center_client_id_v1";
+    // Keep pending data in localStorage so a redirect that opens a fresh tab can still be matched.
+    const PENDING_CLIENT_KEY = "key_center_pending_client_v1";
+    const PENDING_ATTEMPT_KEY = "key_center_pending_attempt_v1";
     let pendingAssignment = null;
     let viewedInThisPage = false;
+    let handlingReturn = false;
 
     function getClientId() {
-      const storageKey = "key_center_client_id_v1";
       try {
-        let id = localStorage.getItem(storageKey);
+        let id = localStorage.getItem(CLIENT_ID_KEY);
         if (!id) {
           id = (typeof crypto !== "undefined" && crypto.randomUUID)
             ? crypto.randomUUID()
             : "kc-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-          localStorage.setItem(storageKey, id);
+          localStorage.setItem(CLIENT_ID_KEY, id);
         }
         return id;
-      } catch {
-        throw new Error("Trình duyệt đang chặn localStorage. Hãy bật bộ nhớ cục bộ rồi tải lại trang.");
+      } catch (error) {
+        throw new Error("Trình duyệt đang chặn localStorage. Hãy bật bộ nhớ trang web rồi tải lại trang.");
       }
     }
 
@@ -125,14 +129,12 @@
         },
         body: JSON.stringify(payload)
       });
-
       let data;
       try {
         data = await response.json();
       } catch {
         throw new Error("Máy chủ trả về dữ liệu không hợp lệ.");
       }
-
       if (!response.ok) {
         console.error("Edge Function error:", response.status, data);
         throw new Error(data.message || data.error || "Yêu cầu thất bại (HTTP " + response.status + ").");
@@ -146,11 +148,8 @@
         throw new Error("Máy chủ chưa trả về liên kết Link4M.");
       }
       let parsed;
-      try {
-        parsed = new URL(candidate);
-      } catch {
-        throw new Error("Liên kết Link4M không đúng định dạng.");
-      }
+      try { parsed = new URL(candidate); }
+      catch { throw new Error("Liên kết Link4M không đúng định dạng."); }
       const allowedHosts = new Set(["link4m.net", "www.link4m.net", "link4m.org", "www.link4m.org", "sitetop.net"]);
       if (parsed.protocol !== "https:" || !allowedHosts.has(parsed.hostname.toLowerCase()) || parsed.username || parsed.password) {
         throw new Error("Liên kết trả về không thuộc tên miền Link4M được phép.");
@@ -162,11 +161,7 @@
       if (!data || data.success !== true || typeof data.key !== "string" || typeof data.content !== "string") {
         throw new Error((data && (data.message || data.error)) || "Không có lượt nhận khả dụng.");
       }
-      pendingAssignment = {
-        key: data.key,
-        title: data.title || "Nội dung của bạn",
-        content: data.content
-      };
+      pendingAssignment = { key: data.key, title: data.title || "Nội dung của bạn", content: data.content };
       viewedInThisPage = false;
       $("keyValue").textContent = data.key;
       $("keyBox").style.display = "block";
@@ -177,71 +172,35 @@
       showStatus("getStatus", "Đã giữ key và nội dung cho bạn. Nhấn MỞ NỘI DUNG khi sẵn sàng.", "success");
     }
 
-    
-async function startLink4M() {
-  const button = $("getKeyButton");
-  button.disabled = true;
-  button.textContent = "ĐANG TẠO LIÊN KẾT...";
-  clearStatus("getStatus");
+    async function startLink4M() {
+      const button = $("getKeyButton");
+      if (button.disabled) return;
+      button.disabled = true;
+      button.textContent = "ĐANG TẠO LIÊN KẾT...";
+      clearStatus("getStatus");
+      try {
+        const clientId = getClientId();
+        const data = await callFunction("create-link", { clientId });
+        if (data.success !== true) throw new Error(data.message || data.error || "Không thể tạo liên kết Link4M.");
 
-  try {
-    const clientId = getClientId();
-    const data = await callFunction("create-link", { clientId });
-
-    if (data.success !== true) {
-      throw new Error(data.message || data.error || "Không thể tạo liên kết Link4M.");
-    }
-
-    const shortUrl = getShortUrl(data);
-    const attemptId = data.attemptId || data.attempt_id;
-    const uuidPattern =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-    if (typeof attemptId !== "string" || !uuidPattern.test(attemptId)) {
-      throw new Error("Mã lượt lấy key không hợp lệ.");
-    }
-
-    sessionStorage.setItem("key_center_pending_attempt_v1", attemptId);
-    sessionStorage.setItem("key_center_pending_client_v1", clientId);
-
-    // Kiểm tra dữ liệu ngay sau khi lưu, trước khi chuyển trang.
-    const savedAttemptId = sessionStorage.getItem("key_center_pending_attempt_v1");
-    const savedClientId = sessionStorage.getItem("key_center_pending_client_v1");
-
-    console.log("KEY CENTER: kiểm tra phiên trước khi chuyển trang", {
-      attemptSaved: savedAttemptId === attemptId,
-      clientSaved: savedClientId === clientId,
-      clientMatchesLocalStorage: getClientId() === clientId
-    });
-
-    if (savedAttemptId !== attemptId || savedClientId !== clientId) {
-      throw new Error("Trình duyệt không lưu được phiên lấy key. Chưa chuyển đến Link4M.");
-    }
-
-    showStatus("getStatus", "Đang chuyển đến Link4M...", "info");
-    window.location.assign(shortUrl);
-  } catch (error) {
-    showStatus("getStatus", error.message || "Không thể mở Link4M.", "error");
-    button.disabled = false;
-    button.textContent = "LẤY KEY NGAY";
-  }
-  
         const shortUrl = getShortUrl(data);
         const attemptId = data.attemptId || data.attempt_id;
         const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
         if (typeof attemptId !== "string" || !uuidPattern.test(attemptId)) {
-          throw new Error("Máy chủ chưa trả về mã lượt yêu cầu hợp lệ. Hãy kiểm tra lại Edge Function create-link.");
+          throw new Error("Máy chủ chưa trả về mã lượt yêu cầu hợp lệ. Hãy kiểm tra Edge Function create-link.");
         }
 
-        // Lưu lượt đang chờ trong phiên trình duyệt để đối chiếu khi quay lại.
-        sessionStorage.setItem("key_center_pending_attempt_v1", attemptId);
-        sessionStorage.setItem("key_center_pending_client_v1", clientId);
-
+        // Save both values before leaving the site; verify they really persisted.
+        localStorage.setItem(PENDING_ATTEMPT_KEY, attemptId);
+        localStorage.setItem(PENDING_CLIENT_KEY, clientId);
+        if (localStorage.getItem(PENDING_ATTEMPT_KEY) !== attemptId || localStorage.getItem(PENDING_CLIENT_KEY) !== clientId) {
+          throw new Error("Không lưu được thông tin phiên trong trình duyệt. Chưa chuyển đến Link4M.");
+        }
         showStatus("getStatus", "Đang chuyển đến Link4M...", "info");
         window.location.assign(shortUrl);
       } catch (error) {
-        showStatus("getStatus", error.message || "Không thể mở Link4M.", "error");
+        console.error("startLink4M failed:", error);
+        showStatus("getStatus", error && error.message ? error.message : "Không thể mở Link4M.", "error");
         button.disabled = false;
         button.textContent = "LẤY KEY NGAY";
       }
@@ -266,13 +225,8 @@ async function startLink4M() {
       const button = $("openContentButton");
       button.disabled = true;
       try {
-        const result = await callFunction("mark-viewed", {
-          clientId: getClientId(),
-          key: pendingAssignment.key
-        });
-        if (result.success !== true) {
-          throw new Error(result.message || result.error || "Không thể ghi nhận trạng thái xem.");
-        }
+        const result = await callFunction("mark-viewed", { clientId: getClientId(), key: pendingAssignment.key });
+        if (result.success !== true) throw new Error(result.message || result.error || "Không thể ghi nhận trạng thái xem.");
         viewedInThisPage = true;
         $("contentTitle").textContent = pendingAssignment.title;
         $("contentText").textContent = pendingAssignment.content;
@@ -280,7 +234,7 @@ async function startLink4M() {
         button.style.display = "none";
         showStatus("validateStatus", "Nội dung đã mở. Đóng lại sẽ ẩn nội dung khỏi giao diện.", "success");
       } catch (error) {
-        showStatus("validateStatus", error.message || "Không thể mở nội dung.", "error");
+        showStatus("validateStatus", error && error.message ? error.message : "Không thể mở nội dung.", "error");
       } finally {
         button.disabled = false;
       }
@@ -300,325 +254,81 @@ async function startLink4M() {
       event.preventDefault();
       const button = $("validateButton");
       const key = $("keyInput").value.trim();
-      if (!key) {
-        showStatus("validateStatus", "Vui lòng nhập key.", "error");
-        return;
-      }
+      if (!key) { showStatus("validateStatus", "Vui lòng nhập key.", "error"); return; }
       button.disabled = true;
       button.textContent = "ĐANG KIỂM TRA...";
       clearStatus("validateStatus");
       try {
         const data = await callFunction("validate-key", { clientId: getClientId(), key });
-        if (data.success !== true || data.valid !== true) {
-          throw new Error(data.message || data.error || "Key không hợp lệ hoặc không thuộc hồ sơ này.");
-        }
+        if (data.success !== true || data.valid !== true) throw new Error(data.message || data.error || "Key không hợp lệ hoặc không thuộc hồ sơ này.");
         prepareAssignment({ success: true, key, title: data.title, content: data.content });
         showStatus("validateStatus", "Key hợp lệ. Nhấn MỞ NỘI DUNG khi sẵn sàng.", "success");
       } catch (error) {
-        showStatus("validateStatus", error.message || "Không thể xác nhận key.", "error");
+        showStatus("validateStatus", error && error.message ? error.message : "Không thể xác nhận key.", "error");
       } finally {
         button.disabled = false;
         button.textContent = "XÁC NHẬN KEY";
       }
     });
 
-    
+    async function handleLink4MReturn() {
+      if (handlingReturn) return;
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("link4m_return") !== "1") return;
+      handlingReturn = true;
 
-async function handleLink4MReturn() {
-  const url = new URL(window.location.href);
+      const returnedClientId = url.searchParams.get("client_id");
+      const returnedAttemptId = url.searchParams.get("attempt_id");
+      let expectedClientId = null;
+      let expectedAttemptId = null;
+      let localClientId = null;
+      try {
+        expectedClientId = localStorage.getItem(PENDING_CLIENT_KEY);
+        expectedAttemptId = localStorage.getItem(PENDING_ATTEMPT_KEY);
+        localClientId = getClientId();
+      } catch (error) {
+        console.error("Cannot read pending session:", error);
+      }
 
-  if (url.searchParams.get("link4m_return") !== "1") {
-    return;
-  }
+      const diagnostic = {
+        hasReturnedClientId: Boolean(returnedClientId),
+        hasReturnedAttemptId: Boolean(returnedAttemptId),
+        hasExpectedClientId: Boolean(expectedClientId),
+        hasExpectedAttemptId: Boolean(expectedAttemptId),
+        clientMatches: Boolean(returnedClientId && returnedClientId === expectedClientId),
+        localClientMatches: Boolean(returnedClientId && returnedClientId === localClientId),
+        attemptMatches: Boolean(returnedAttemptId && returnedAttemptId === expectedAttemptId)
+      };
+      console.log("KEY CENTER RETURN DIAGNOSTIC:", diagnostic);
 
-  const returnedClientId = url.searchParams.get("client_id");
-  const returnedAttemptId = url.searchParams.get("attempt_id");
+      if (!returnedClientId || !returnedAttemptId || returnedClientId !== expectedClientId || returnedClientId !== localClientId || returnedAttemptId !== expectedAttemptId) {
+        showStatus("getStatus", "Phiên lấy key chưa khớp. Chưa gọi get-key. Hãy gửi kết quả KEY CENTER RETURN DIAGNOSTIC cho người hỗ trợ.", "error");
+        handlingReturn = false;
+        return;
+      }
 
-  let expectedClientId = null;
-  let expectedAttemptId = null;
-  let localClientId = null;
-  let storageError = false;
+      // Remove return parameters from address bar only after validation; don't reload the page.
+      url.searchParams.delete("link4m_return");
+      url.searchParams.delete("client_id");
+      url.searchParams.delete("attempt_id");
+      window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+      localStorage.removeItem(PENDING_CLIENT_KEY);
+      localStorage.removeItem(PENDING_ATTEMPT_KEY);
 
-  try {
-    expectedClientId = sessionStorage.getItem(
-      "key_center_pending_client_v1"
-    );
-    expectedAttemptId = sessionStorage.getItem(
-      "key_center_pending_attempt_v1"
-    );
-    localClientId = getClientId();
-  } catch (error) {
-    storageError = true;
-  }
+      try {
+        showStatus("getStatus", "Đang lấy lượt nhận của bạn...", "info");
+        const data = await callFunction("get-key", { clientId: localClientId });
+        prepareAssignment(data);
+      } catch (error) {
+        console.error("get-key failed:", error);
+        showStatus("getStatus", error && error.message ? error.message : "Không thể lấy key. Có thể bạn đã mở nội dung hoặc đã hết nội dung khả dụng.", "error");
+      } finally {
+        handlingReturn = false;
+      }
+    }
 
-  const diagnostic = {
-    hasReturnFlag: true,
-    hasReturnedClientId: Boolean(returnedClientId),
-    hasReturnedAttemptId: Boolean(returnedAttemptId),
-    hasExpectedClientId: Boolean(expectedClientId),
-    hasExpectedAttemptId: Boolean(expectedAttemptId),
-    clientMatches: Boolean(returnedClientId) &&
-      returnedClientId === expectedClientId,
-    localClientMatches: Boolean(returnedClientId) &&
-      returnedClientId === localClientId,
-    attemptMatches: Boolean(returnedAttemptId) &&
-      returnedAttemptId === expectedAttemptId,
-    storageError
-  };
-
-  console.log("KEY CENTER RETURN DIAGNOSTIC:", diagnostic);
-
-  if (
-    storageError ||
-    !returnedClientId ||
-    !returnedAttemptId ||
-    returnedClientId !== expectedClientId ||
-    returnedClientId !== localClientId ||
-    returnedAttemptId !== expectedAttemptId
-  ) {
-    showStatus(
-      "getStatus",
-      "Phiên lấy key chưa khớp. Chưa gọi get-key và chưa tạo link mới. Hãy kiểm tra Console để xác định nguyên nhân.",
-      "error"
-    );
-    return;
-  }
-
-  sessionStorage.removeItem("key_center_pending_client_v1");
-  sessionStorage.removeItem("key_center_pending_attempt_v1");
-
-  try {
-    showStatus("getStatus", "Đang lấy lượt nhận của bạn...", "info");
-
-    const data = await callFunction("get-key", {
-      clientId: localClientId
-    });
-
-    prepareAssignment(data);
-  } catch (error) {
-    showStatus(
-      "getStatus",
-      error?.message || "Không thể lấy key.",
-      "error"
-    );
-  }
-}
-  
-  // Giữ nguyên các tham số trên thanh địa chỉ trong lúc kiểm tra.
-  console.log("Link4M return check:", {
-    hasReturnFlag: url.searchParams.get("link4m_return") === "1",
-    hasClientId: Boolean(returnedClientId),
-    hasAttemptId: Boolean(returnedAttemptId),
-    hasExpectedClientId: Boolean(expectedClientId),
-    hasExpectedAttemptId: Boolean(expectedAttemptId),
-    clientMatches:
-      Boolean(returnedClientId) &&
-      returnedClientId === expectedClientId &&
-      returnedClientId === getClientId(),
-    attemptMatches:
-      Boolean(returnedAttemptId) &&
-      returnedAttemptId === expectedAttemptId
-  });
-
-  // Kiểm tra phiên trước khi nhận key.
-  if (
-    !returnedClientId ||
-    !returnedAttemptId ||
-    returnedClientId !== expectedClientId ||
-    returnedClientId !== getClientId() ||
-    returnedAttemptId !== expectedAttemptId
-  ) {
-    showStatus(
-      "getStatus",
-      "Không tìm thấy lượt lấy key khớp với phiên này. Hãy nhấn LẤY KEY NGAY để tạo lượt mới.",
-      "error"
-    );
-    return;
-  }
-
-  // Chỉ xóa phiên đang chờ sau khi xác minh thành công.
-  sessionStorage.removeItem("key_center_pending_client_v1");
-  sessionStorage.removeItem("key_center_pending_attempt_v1");
-
-  try {
-    showStatus(
-      "getStatus",
-      "Đang lấy lượt nhận của bạn...",
-      "info"
-    );
-
-    const data = await callFunction("get-key", {
-      clientId: getClientId()
-    });
-
-    prepareAssignment(data);
-  } catch (error) {
-    showStatus(
-      "getStatus",
-      error && error.message
-        ? error.message
-        : "Không thể lấy key. Có thể bạn đã mở nội dung hoặc đã hết nội dung khả dụng.",
-      "error"
-    );
-  }
-}
-
-// Chạy xử lý khi trang tải.
-handleLink4MReturn();
-
+    // Run once, after all UI elements and handlers have been initialized.
     handleLink4MReturn();
   </script>
-<style>
-  #access-lock {
-    position: fixed;
-    inset: 0;
-    z-index: 999999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: rgba(3, 8, 5, 0.97);
-    backdrop-filter: blur(15px);
-    font-family: Arial, sans-serif;
-    color: #f2fff6;
-  }
-
-  #access-lock .lock-card {
-    width: 100%;
-    max-width: 390px;
-    padding: 28px 24px;
-    border: 1px solid #294333;
-    border-radius: 20px;
-    background: linear-gradient(145deg, #14251a, #090e0b);
-    box-shadow: 0 20px 70px #0009;
-    text-align: center;
-  }
-
-  #access-lock .lock-icon {
-    width: 65px;
-    height: 65px;
-    display: grid;
-    place-items: center;
-    margin: 0 auto 18px;
-    border: 1px solid #39f58a80;
-    border-radius: 18px;
-    background: #39f58a12;
-    color: #39f58a;
-    font-size: 30px;
-  }
-
-  #access-lock h2 {
-    margin: 0;
-    font-size: 25px;
-    letter-spacing: 2px;
-  }
-
-  #access-lock h2 span { color: #39f58a; }
-
-  #access-lock .lock-desc {
-    margin: 12px 0 24px;
-    color: #91a096;
-    font-size: 13px;
-    line-height: 1.7;
-  }
-
-  #access-lock input {
-    width: 100%;
-    height: 48px;
-    padding: 0 14px;
-    margin-bottom: 12px;
-    border: 1px solid #28392f;
-    border-radius: 10px;
-    background: #080d0b;
-    color: #fff;
-    outline: none;
-    font-size: 14px;
-    box-sizing: border-box;
-  }
-
-  #access-lock input:focus {
-    border-color: #39f58a;
-  }
-
-  #access-lock button {
-    width: 100%;
-    height: 48px;
-    border: none;
-    border-radius: 10px;
-    background: #39f58a;
-    color: #06120a;
-    font-weight: 800;
-    cursor: pointer;
-  }
-
-  #access-lock .lock-error {
-    min-height: 18px;
-    margin-top: 13px;
-    color: #ff9999;
-    font-size: 13px;
-  }
-
-  #access-lock .lock-footer {
-    margin-top: 22px;
-    color: #68766c;
-    font-size: 10px;
-    letter-spacing: 2px;
-  }
-</style>
-
-<div id="access-lock" role="dialog"
-     aria-modal="true" aria-labelledby="lock-title">
-  <div class="lock-card">
-    <div class="lock-icon">🔒</div>
-    <h2 id="lock-title">KEY <span>ACCESS</span></h2>
-    <p class="lock-desc">
-      Website đã được khóa.<br>
-      Nhập key lấy ở ugphone mod để tiếp tục
-    </p>
-
-    <form id="access-form">
-      <input
-        id="access-key-input"
-        type="password"
-        placeholder="Nhập key truy cập..."
-        autocomplete="off"
-        required
-      >
-      <button type="submit">XÁC NHẬN KEY</button>
-    </form>
-
-    <div id="access-error" class="lock-error"
-         role="status" aria-live="polite"></div>
-
-    <div class="lock-footer">SECURE ACCESS SYSTEM</div>
-  </div>
-</div>
-
-<script>
-(() => {
-  "use strict";
-
-  // ===== CHỈNH KEY CỦA BẠN Ở ĐÂY =====
-  const ACCESS_KEY = "Toro_vaizomlesaunu";
-  // ==================================
-
-  const overlay = document.getElementById("access-lock");
-  const form = document.getElementById("access-form");
-  const input = document.getElementById("access-key-input");
-  const error = document.getElementById("access-error");
-
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    if (input.value.trim() === ACCESS_KEY) {
-      overlay.remove();
-    } else {
-      error.textContent = "Key không chính xác. Vui lòng thử lại.";
-      input.value = "";
-      input.focus();
-    }
-  });
-})();
-</script>
 </body>
 </html>
