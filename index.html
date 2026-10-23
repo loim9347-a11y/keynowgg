@@ -305,8 +305,21 @@ async function handleLink4MReturn() {
 
   const expectedAttemptId = sessionStorage.getItem(
     "key_center_pending_attempt_v1"
-  );
 
+  );
+console.log("Link4M session diagnostic:", {
+  hasReturnFlag: url.searchParams.get("link4m_return") === "1",
+  hasClientId: Boolean(returnedClientId),
+  hasAttemptId: Boolean(returnedAttemptId),
+  hasExpectedClientId: Boolean(expectedClientId),
+  hasExpectedAttemptId: Boolean(expectedAttemptId),
+  clientMatches: Boolean(returnedClientId) &&
+    returnedClientId === expectedClientId &&
+    returnedClientId === getClientId(),
+  attemptMatches: Boolean(returnedAttemptId) &&
+    returnedAttemptId === expectedAttemptId
+});
+  
   // Giữ nguyên các tham số trên thanh địa chỉ trong lúc kiểm tra.
   console.log("Link4M return check:", {
     hasReturnFlag: url.searchParams.get("link4m_return") === "1",
