@@ -330,5 +330,59 @@
     // Run once, after all UI elements and handlers have been initialized.
     handleLink4MReturn();
   </script>
+  <div id="access-lock" role="dialog"
+     aria-modal="true" aria-labelledby="lock-title">
+  <div class="lock-card">
+    <div class="lock-icon">🔒</div>
+    <h2 id="lock-title">KEY <span>ACCESS</span></h2>
+    <p class="lock-desc">
+      Website đã được khóa.<br>
+      Nhập key lấy ở ugphone mod để tiếp tục
+    </p>
+
+    <form id="access-form">
+      <input
+        id="access-key-input"
+        type="password"
+        placeholder="Nhập key truy cập..."
+        autocomplete="off"
+        required
+      >
+      <button type="submit">XÁC NHẬN KEY</button>
+    </form>
+
+    <div id="access-error" class="lock-error"
+         role="status" aria-live="polite"></div>
+
+    <div class="lock-footer">SECURE ACCESS SYSTEM</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ===== CHỈNH KEY CỦA BẠN Ở ĐÂY =====
+  const ACCESS_KEY = "Toro_vaizomlesaunu";
+  // ==================================
+
+  const overlay = document.getElementById("access-lock");
+  const form = document.getElementById("access-form");
+  const input = document.getElementById("access-key-input");
+  const error = document.getElementById("access-error");
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    if (input.value.trim() === ACCESS_KEY) {
+      overlay.remove();
+    } else {
+      error.textContent = "Key không chính xác. Vui lòng thử lại.";
+      input.value = "";
+      input.focus();
+    }
+  });
+})();
+</script>
 </body>
 </html>
