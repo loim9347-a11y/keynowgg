@@ -424,6 +424,29 @@
     font-size: 13px;
   }
 
+  #keyLock .key-get-link {
+    display: block;
+    width: 100%;
+    margin: 0 0 12px;
+    padding: 15px 12px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid #39f58a;
+    color: #39f58a;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  #keyLock .key-get-link:hover { background: #39f58a12; }
+  #keyLock .key-notice {
+    margin: 0 0 16px;
+    color: #91a096;
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
   #keyLock .key-footer {
     margin-top: 22px;
     color: #68766c;
@@ -439,8 +462,11 @@
     <h2>KEY <span>CENTER</span></h2>
 
     <p class="key-desc">
-      Vui lòng nhập key để mở khóa và sử dụng website.
+      Vui lòng lấy key trước, sau đó nhập key để mở khóa website.
     </p>
+
+    <a id="keyGetLink" class="key-get-link" href="https://example.com" target="_blank" rel="noopener noreferrer">GET KEY</a>
+    <p id="keyLockNotice" class="key-notice"></p>
 
     <form id="keyLockForm">
       <input
@@ -461,8 +487,19 @@
 
 <script>
 (function () {
+  // ===== TÙY CHỈNH TẠI ĐÂY =====
   const MY_SECRET_KEY = "Toro_baxizamosauno";
+  const GET_KEY_URL = "https://example.com"; // Thay bằng link GET KEY của bạn
+  const GET_KEY_NOTICE = "LƯU Ý : Nếu ai đã get key ở app ugphone mod rồi chỉ cần dán key ở app vào là XONG."; // Sửa dòng thông báo tùy ý
+  const GET_KEY_BUTTON_TEXT = "GET KEY"; // Có thể đổi tên nút
+  // =============================
+
   const lock = document.getElementById("keyLock");
+  const getKeyLink = document.getElementById("keyGetLink");
+  const notice = document.getElementById("keyLockNotice");
+  getKeyLink.href = GET_KEY_URL;
+  getKeyLink.textContent = GET_KEY_BUTTON_TEXT;
+  notice.textContent = GET_KEY_NOTICE;
   const form = document.getElementById("keyLockForm");
   const input = document.getElementById("accessKey");
   const error = document.getElementById("keyError");
